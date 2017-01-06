@@ -1,0 +1,9 @@
+decorator==4.0.10
+ipython-genutils==0.1.0
+jupyter-client==4.4.0
+jupyter-core==4.2.1
+pyzmq==16.0.2
+six==1.10.0
+toree==0.1.0.dev8
+traitlets==4.3.1
+virtualenv==15.1.0
