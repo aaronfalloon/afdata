@@ -41,16 +41,39 @@ def confidence(itemset_a, itemset_b, transactions):
     return support(itemset_a.union(itemset_b), transactions) \
         / itemset_a_support
 
-def get_frequent_k_itemsets(transactions, k=1, min_support=0.2):
+def get_frequent_k_length_itemsets(transactions, min_support=0.2, k=1):
     """Returns all the k-length itemsets, from the transactions, that satisfy
     min_support.
 
     Parameters
     ----------
+    transactions : list of list
+    min_support : float, optional
+        From 0.0 to 1.0. Percentage of transactions that should contain an
+        itemset for it to be considered frequent.
+    k : int
+        Length that the frequent itemsets should be
 
     Returns
     -------
+    list of dict
+        Each dict contains itemset and support keys. itemset is type set and
+        support is type float.
+
     """
+    all_items = set()
+    for transaction in transactions:
+        all_items = all_items.union(transaction)
+    k_length_itemsets = frozenset(map(lambda item: frozenset([item]), all_items))
+    results = []
+    for itemset in k_length_itemsets:
+        itemset_support = support(itemset, transactions)
+        if itemset_support >= min_support:
+            results.append({
+                'itemset': itemset,
+                'support': itemset_support
+            })
+    return results
 
 def get_frequent_itemsets(transactions, min_support=0.2):
     """Returns all the itemsets, from the transactions, that satisfy
@@ -72,19 +95,4 @@ def get_frequent_itemsets(transactions, min_support=0.2):
         support is type float.
 
     """
-    all_items = set()
-    for transaction in transactions:
-        all_items = all_items.union(transaction)
-    k_length_itemsets = frozenset(map(lambda item: frozenset([item]), all_items))
-    frequent_itemsets = set()
-    results = []
-    for itemset in k_length_itemsets:
-        itemset_support = support(itemset, transactions)
-        if itemset_support >= min_support:
-            frequent_itemsets.add(itemset)
-            results.append({
-                'itemset': itemset,
-                'support': itemset_support
-            })
-    print(results)
-    print(frequent_itemsets)
+    print(get_frequent_k_length_itemsets(transactions))
