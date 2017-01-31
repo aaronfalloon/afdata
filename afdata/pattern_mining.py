@@ -41,6 +41,16 @@ def confidence(itemset_a, itemset_b, transactions):
     return support(itemset_a.union(itemset_b), transactions) \
         / itemset_a_support
 
+def get_frequent_k_itemsets(transactions, k=1, min_support=0.2):
+    """Returns all the k-length itemsets, from the transactions, that satisfy
+    min_support.
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+    """
 
 def get_frequent_itemsets(transactions, min_support=0.2):
     """Returns all the itemsets, from the transactions, that satisfy
@@ -63,18 +73,17 @@ def get_frequent_itemsets(transactions, min_support=0.2):
 
     """
     all_items = set()
-    frequent_itemsets = []
-    results = []
     for transaction in transactions:
         all_items = all_items.union(transaction)
-    k_length_itemsets = set([[item] for item in all_items])
-    print(k_length_itemsets)
-    for item in all_items:
-        itemset_support = support([item], transactions)
+    k_length_itemsets = frozenset(map(lambda item: frozenset([item]), all_items))
+    frequent_itemsets = set()
+    results = []
+    for itemset in k_length_itemsets:
+        itemset_support = support(itemset, transactions)
         if itemset_support >= min_support:
-            frequent_itemsets.append(item)
+            frequent_itemsets.add(itemset)
             results.append({
-                'itemset': set([item]),
+                'itemset': itemset,
                 'support': itemset_support
             })
     print(results)
