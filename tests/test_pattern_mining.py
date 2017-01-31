@@ -63,5 +63,43 @@ class PatternMining(unittest.TestCase):
 
         self.assertEqual(confidence, 0)
 
-    def test_returns_rules_with_min_support(self):
+    def test_returns_frequent_itemsets(self):
+        frequent_itemsets = pattern_mining.get_frequent_itemsets(transactions)
+
+        self.assertEquals(frequent_itemsets, [
+            {
+                'itemset': set(['milk']),
+                'support': 2 / 7
+            },
+            {
+                'itemset': set(['bread']),
+                'support': 5 / 7
+            },
+            {
+                'itemset': set(['butter']),
+                'support': 4 / 7
+            },
+            {
+                'itemset': set(['jam']),
+                'support': 2 / 7
+            },
+            {
+                'itemset': set(['milk', 'bread']),
+                'support': 2 / 7
+            },
+            {
+                'itemset': set(['bread', 'butter']),
+                'support': 3 / 7
+            },
+            {
+                'itemset': set(['bread', 'jam']),
+                'support': 2 / 7
+            },
+            {
+                'itemset': set(['bread', 'butter', 'jam']),
+                'support': 2 / 7
+            }
+        ])
+
+    def test_returns_frequent_itemsets_for_min_support_0_1(self):
         pass
