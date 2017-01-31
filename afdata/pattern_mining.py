@@ -18,6 +18,7 @@ def support(itemset, transactions):
             contains_itemset += 1
     return contains_itemset / len(transactions)
 
+
 def confidence(itemset_a, itemset_b, transactions):
     """Returns the percentage of transactions that contain both itemset_a and
     itemset_b.
@@ -37,7 +38,9 @@ def confidence(itemset_a, itemset_b, transactions):
     itemset_a_support = support(itemset_a, transactions)
     if itemset_a_support == 0:
         return 0
-    return support(itemset_a.union(itemset_b), transactions) / itemset_a_support
+    return support(itemset_a.union(itemset_b), transactions) \
+        / itemset_a_support
+
 
 def apriori():
     pass
