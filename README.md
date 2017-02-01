@@ -1,3 +1,5 @@
+[![PyPI version](https://badge.fury.io/py/afdata.svg)](https://badge.fury.io/py/afdata)
+
 # Todos
 
 * Docs
