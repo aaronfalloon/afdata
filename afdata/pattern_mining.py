@@ -117,5 +117,4 @@ def get_frequent_itemsets(transactions, min_support=0.2):
             k=k
         )
         results += length_k_frequent_itemsets
-    print(results)
     return results
