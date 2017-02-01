@@ -63,9 +63,9 @@ class PatternMining(unittest.TestCase):
 
         self.assertEqual(confidence, 0)
 
-    def test_returns_frequent_k_length_itemsets(self):
+    def test_returns_frequent_length_k_itemsets(self):
         frequent_itemsets = \
-            pattern_mining.get_frequent_k_length_itemsets(transactions)
+            pattern_mining.get_frequent_length_k_itemsets(transactions)
 
         self.assertCountEqual(frequent_itemsets, [
             {
@@ -86,9 +86,9 @@ class PatternMining(unittest.TestCase):
             }
         ])
 
-    def test_returns_frequent_2_length_itemsets(self):
+    def test_returns_frequent_length_2_itemsets(self):
         frequent_itemsets = \
-            pattern_mining.get_frequent_k_length_itemsets(transactions, k=2)
+            pattern_mining.get_frequent_length_k_itemsets(transactions, k=2)
 
         self.assertCountEqual(frequent_itemsets, [
             {
@@ -101,6 +101,21 @@ class PatternMining(unittest.TestCase):
             },
             {
                 'itemset': set(['bread', 'jam']),
+                'support': 2 / 7
+            },
+            {
+                'itemset': set(['butter', 'jam']),
+                'support': 2 / 7
+            }
+        ])
+
+    def test_returns_frequent_length_3_itemsets(self):
+        frequent_itemsets = \
+            pattern_mining.get_frequent_length_k_itemsets(transactions, k=3)
+
+        self.assertCountEqual(frequent_itemsets, [
+            {
+                'itemset': set(['bread', 'butter', 'jam']),
                 'support': 2 / 7
             }
         ])
@@ -135,6 +150,10 @@ class PatternMining(unittest.TestCase):
             },
             {
                 'itemset': set(['bread', 'jam']),
+                'support': 2 / 7
+            },
+            {
+                'itemset': set(['butter', 'jam']),
                 'support': 2 / 7
             },
             {

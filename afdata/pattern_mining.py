@@ -1,3 +1,5 @@
+import itertools
+
 def support(itemset, transactions):
     """Returns the percentage of transactions that contain the itemset.
 
@@ -41,8 +43,8 @@ def confidence(itemset_a, itemset_b, transactions):
     return support(itemset_a.union(itemset_b), transactions) \
         / itemset_a_support
 
-def get_frequent_k_length_itemsets(transactions, min_support=0.2, k=1):
-    """Returns all the k-length itemsets, from the transactions, that satisfy
+def get_frequent_length_k_itemsets(transactions, min_support=0.2, k=1):
+    """Returns all the length-k itemsets, from the transactions, that satisfy
     min_support.
 
     Parameters
@@ -51,7 +53,7 @@ def get_frequent_k_length_itemsets(transactions, min_support=0.2, k=1):
     min_support : float, optional
         From 0.0 to 1.0. Percentage of transactions that should contain an
         itemset for it to be considered frequent.
-    k : int
+    k : int, optional
         Length that the frequent itemsets should be
 
     Returns
@@ -59,14 +61,15 @@ def get_frequent_k_length_itemsets(transactions, min_support=0.2, k=1):
     list of dict
         Each dict contains itemset and support keys. itemset is type set and
         support is type float.
-
     """
     all_items = set()
     for transaction in transactions:
         all_items = all_items.union(transaction)
-    k_length_itemsets = frozenset(map(lambda item: frozenset([item]), all_items))
+    length_k_itemsets = itertools.product(all_items, repeat=k)
+    length_k_itemsets = frozenset(frozenset(itemset) for itemset in length_k_itemsets)
+    length_k_itemsets = filter(lambda itemset: len(itemset) == k, length_k_itemsets)
     results = []
-    for itemset in k_length_itemsets:
+    for itemset in length_k_itemsets:
         itemset_support = support(itemset, transactions)
         if itemset_support >= min_support:
             results.append({
@@ -95,4 +98,4 @@ def get_frequent_itemsets(transactions, min_support=0.2):
         support is type float.
 
     """
-    print(get_frequent_k_length_itemsets(transactions))
+    print(get_frequent_length_k_itemsets(transactions))
