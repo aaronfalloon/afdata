@@ -6,6 +6,7 @@ setup(
     version='0.0.1',
     url='https://github.com/aaronfalloon/afdata',
     author='Aaron Falloon',
+    author_email='contact@aaronfalloon.com',
     license='MIT',
     packages=['afdata']
 )
