@@ -120,6 +120,37 @@ class PatternMining(unittest.TestCase):
             }
         ])
 
+    def test_returns_frequent_length_2_itemsets_with_min_support_0_4(self):
+        frequent_itemsets = \
+            pattern_mining.get_frequent_length_k_itemsets(
+                transactions,
+                min_support=0.4,
+                k=2
+            )
+
+        self.assertCountEqual(frequent_itemsets, [
+            {
+                'itemset': set(['bread', 'butter']),
+                'support': 3 / 7
+            }
+        ])
+
+    def test_raises_exception_when_k_set_to_0(self):
+        with self.assertRaisesRegex(ValueError, 'k must be greater than 0'):
+            pattern_mining.get_frequent_length_k_itemsets(transactions, k=0)
+
+    def test_raises_exception_when_min_support_less_than_0(self):
+        with self.assertRaisesRegex(ValueError, 'min_support must be greater than 0 and less than or equal to 1.0'):
+            pattern_mining.get_frequent_length_k_itemsets(transactions, min_support=-0.1)
+
+    def test_raises_exception_when_min_support_equals_0(self):
+        with self.assertRaisesRegex(ValueError, 'min_support must be greater than 0 and less than or equal to 1.0'):
+            pattern_mining.get_frequent_length_k_itemsets(transactions, min_support=0)
+
+    def test_raises_exception_when_min_support_greater_than_0(self):
+        with self.assertRaisesRegex(ValueError, 'min_support must be greater than 0 and less than or equal to 1.0'):
+            pattern_mining.get_frequent_length_k_itemsets(transactions, min_support=1.7)
+
     def test_returns_frequent_itemsets(self):
         frequent_itemsets = pattern_mining.get_frequent_itemsets(transactions)
 

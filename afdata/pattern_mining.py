@@ -62,6 +62,10 @@ def get_frequent_length_k_itemsets(transactions, min_support=0.2, k=1):
         Each dict contains itemset and support keys. itemset is type set and
         support is type float.
     """
+    if min_support <= 0 or min_support > 1:
+        raise ValueError('min_support must be greater than 0 and less than or equal to 1.0')
+    if k <= 0:
+        raise ValueError('k must be greater than 0')
     all_items = set()
     for transaction in transactions:
         all_items = all_items.union(transaction)
