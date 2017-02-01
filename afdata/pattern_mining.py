@@ -100,6 +100,22 @@ def get_frequent_itemsets(transactions, min_support=0.2):
     list of dict
         Each dict contains itemset and support keys. itemset is type set and
         support is type float.
-
     """
-    print(get_frequent_length_k_itemsets(transactions))
+    results = []
+    k = 1
+    length_k_frequent_itemsets = get_frequent_length_k_itemsets(
+        transactions,
+        min_support=min_support,
+        k=k
+    )
+    results += length_k_frequent_itemsets
+    while len(length_k_frequent_itemsets) > 0:
+        k += 1
+        length_k_frequent_itemsets = get_frequent_length_k_itemsets(
+            transactions,
+            min_support=min_support,
+            k=k
+        )
+        results += length_k_frequent_itemsets
+    print(results)
+    return results
