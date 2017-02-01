@@ -88,7 +88,6 @@ def get_frequent_length_k_itemsets(transactions, min_support=0.2, k=1, frequent_
             if not has_frequent_sub_itemset:
                 to_remove.add(itemset)
         length_k_itemsets = length_k_itemsets.difference(to_remove)
-    print('candidates', len(length_k_itemsets))
     results = []
     for itemset in length_k_itemsets:
         itemset_support = support(itemset, transactions)
