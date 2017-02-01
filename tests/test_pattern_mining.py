@@ -134,6 +134,50 @@ class PatternMining(unittest.TestCase):
             }
         ])
 
+    def test_considers_only_frequent_itemsets_that_have_frequent_sub_itemsets(self):
+        frequent_itemsets_1 = \
+            pattern_mining.get_frequent_length_k_itemsets(
+                transactions,
+                k=2,
+                frequent_sub_itemsets=frozenset([
+                    frozenset(['milk']),
+                    frozenset(['bread'])
+                ])
+            )
+        frequent_itemsets_2 = \
+            pattern_mining.get_frequent_length_k_itemsets(
+                transactions,
+                k=2,
+                frequent_sub_itemsets=frozenset([
+                    frozenset(['jam'])
+                ])
+            )
+
+        self.assertCountEqual(frequent_itemsets_1, [
+            {
+                'itemset': frozenset(['milk', 'bread']),
+                'support': 2 / 7
+            },
+            {
+                'itemset': frozenset(['bread', 'butter']),
+                'support': 3 / 7
+            },
+            {
+                'itemset': frozenset(['bread', 'jam']),
+                'support': 2 / 7
+            }
+        ])
+        self.assertCountEqual(frequent_itemsets_2, [
+            {
+                'itemset': frozenset(['bread', 'jam']),
+                'support': 2 / 7
+            },
+            {
+                'itemset': frozenset(['butter', 'jam']),
+                'support': 2 / 7
+            }
+        ])
+
     def test_raises_exception_when_k_set_to_0(self):
         with self.assertRaisesRegex(ValueError, 'k must be greater than 0'):
             pattern_mining.get_frequent_length_k_itemsets(transactions, k=0)

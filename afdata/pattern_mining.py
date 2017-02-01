@@ -43,7 +43,7 @@ def confidence(itemset_a, itemset_b, transactions):
     return support(itemset_a.union(itemset_b), transactions) \
         / itemset_a_support
 
-def get_frequent_length_k_itemsets(transactions, min_support=0.2, k=1):
+def get_frequent_length_k_itemsets(transactions, min_support=0.2, k=1, frequent_sub_itemsets=None):
     """Returns all the length-k itemsets, from the transactions, that satisfy
     min_support.
 
@@ -55,6 +55,10 @@ def get_frequent_length_k_itemsets(transactions, min_support=0.2, k=1):
         itemset for it to be considered frequent.
     k : int, optional
         Length that the frequent itemsets should be
+    frequent_sub_itemsets : list of list, optional
+        Facilitates candidate pruning by the Apriori property. Length-k itemset
+        candidates that aren't supersets of at least 1 frequent sub-itemset are
+        pruned.
 
     Returns
     -------
@@ -71,7 +75,19 @@ def get_frequent_length_k_itemsets(transactions, min_support=0.2, k=1):
         all_items = all_items.union(transaction)
     length_k_itemsets = itertools.product(all_items, repeat=k)
     length_k_itemsets = frozenset(frozenset(itemset) for itemset in length_k_itemsets)
-    length_k_itemsets = filter(lambda itemset: len(itemset) == k, length_k_itemsets)
+    length_k_itemsets = set(filter(lambda itemset: len(itemset) == k, length_k_itemsets))
+    # Remove itemsets that don't have a frequent sub-itemset to take advantage
+    # of the Apriori property
+    if frequent_sub_itemsets:
+        to_remove = set()
+        for itemset in length_k_itemsets:
+            has_frequent_sub_itemset = False
+            for sub_itemset in frequent_sub_itemsets:
+                if itemset.issuperset(sub_itemset):
+                    has_frequent_sub_itemset = True
+            if not has_frequent_sub_itemset:
+                to_remove.add(itemset)
+        length_k_itemsets = length_k_itemsets.difference(to_remove)
     results = []
     for itemset in length_k_itemsets:
         itemset_support = support(itemset, transactions)
