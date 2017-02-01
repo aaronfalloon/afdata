@@ -59,8 +59,8 @@ def get_frequent_length_k_itemsets(transactions, min_support=0.2, k=1):
     Returns
     -------
     list of dict
-        Each dict contains itemset and support keys. itemset is type set and
-        support is type float.
+        Each dict contains itemset and support keys. itemset is type frozenset
+        and support is type float.
     """
     if min_support <= 0 or min_support > 1:
         raise ValueError('min_support must be greater than 0 and less than or equal to 1.0')
@@ -98,8 +98,8 @@ def get_frequent_itemsets(transactions, min_support=0.2):
     Returns
     -------
     list of dict
-        Each dict contains itemset and support keys. itemset is type set and
-        support is type float.
+        Each dict contains itemset and support keys. itemset is type frozenset
+        and support is type float.
     """
     results = []
     k = 1
