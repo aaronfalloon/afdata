@@ -1,24 +1,30 @@
 import itertools
 
-def support(itemset, transactions):
-    """Returns the percentage of transactions that contain the itemset.
+def support(itemsets, transactions):
+    """Returns the percentage of transactions that contain the itemsets.
 
     Parameters
     ----------
-    itemset : frozenset
+    itemsets : list of frozenset
     transactions : list of list
 
     Returns
     -------
-    float
-        Percentage of transactions that contain the itemset
+    dict
+    Key of each item is the itemset and the value is the itemset's support
     """
-    contains_itemset = 0
+    counts = {}
+    for itemset in itemsets:
+        counts[itemset] = 0
     for transaction in transactions:
-        if itemset.issubset(transaction):
-            contains_itemset += 1
-    return contains_itemset / len(transactions)
-
+        for itemset in itemsets:
+            if itemset.issubset(transaction):
+                counts[itemset] += 1
+    supports = {}
+    total_transactions = len(transactions)
+    for itemset, count in counts.items():
+        supports[itemset] = count / total_transactions
+    return supports
 
 def confidence(itemset_a, itemset_b, transactions):
     """Returns the percentage of transactions that contain both itemset_a and
@@ -35,10 +41,11 @@ def confidence(itemset_a, itemset_b, transactions):
     float
         Percentage of transactions that contain both itemset_a and itemset_b
     """
-    itemset_a_support = support(itemset_a, transactions)
+    itemset_a_support = support([itemset_a], transactions)[itemset_a]
     if itemset_a_support == 0:
         return 0
-    return support(itemset_a.union(itemset_b), transactions) \
+    itemset_a_union_b = itemset_a.union(itemset_b)
+    return support([itemset_a_union_b], transactions)[itemset_a_union_b] \
         / itemset_a_support
 
 def get_frequent_length_k_itemsets(transactions, min_support=0.2, k=1, frequent_sub_itemsets=None):
@@ -86,13 +93,13 @@ def get_frequent_length_k_itemsets(transactions, min_support=0.2, k=1, frequent_
             if has_frequent_sub_itemset:
                 pruned_length_k_itemsets.add(itemset)
     frequent_itemsets = []
-    supports = []
-    for itemset in pruned_length_k_itemsets:
-        itemset_support = support(itemset, transactions)
+    frequent_supports = []
+    supports = support(pruned_length_k_itemsets, transactions)
+    for itemset, itemset_support in supports.items():
         if itemset_support >= min_support:
             frequent_itemsets.append(itemset)
-            supports.append(itemset_support)
-    return frequent_itemsets, supports
+            frequent_supports.append(itemset_support)
+    return frequent_itemsets, frequent_supports
 
 def get_frequent_itemsets(transactions, min_support=0.2):
     """Returns all the itemsets, from the transactions, that satisfy
