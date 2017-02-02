@@ -5,7 +5,7 @@ def support(itemset, transactions):
 
     Parameters
     ----------
-    itemset : list
+    itemset : frozenset
     transactions : list of list
 
     Returns
@@ -14,7 +14,6 @@ def support(itemset, transactions):
         Percentage of transactions that contain the itemset
     """
     contains_itemset = 0
-    itemset = set(itemset)
     for transaction in transactions:
         if itemset.issubset(transaction):
             contains_itemset += 1
@@ -27,8 +26,8 @@ def confidence(itemset_a, itemset_b, transactions):
 
     Parameters
     ----------
-    itemset_a : list
-    itemset_b : list
+    itemset_a : frozenset
+    itemset_b : frozenset
     transactions : list of list
 
     Returns
@@ -36,7 +35,6 @@ def confidence(itemset_a, itemset_b, transactions):
     float
         Percentage of transactions that contain both itemset_a and itemset_b
     """
-    itemset_a = set(itemset_a)
     itemset_a_support = support(itemset_a, transactions)
     if itemset_a_support == 0:
         return 0
@@ -55,7 +53,7 @@ def get_frequent_length_k_itemsets(transactions, min_support=0.2, k=1, frequent_
         itemset for it to be considered frequent.
     k : int, optional
         Length that the frequent itemsets should be
-    frequent_sub_itemsets : list of list, optional
+    frequent_sub_itemsets : frozenset of frozenset, optional
         Facilitates candidate pruning by the Apriori property. Length-k itemset
         candidates that aren't supersets of at least 1 frequent sub-itemset are
         pruned.
@@ -75,7 +73,7 @@ def get_frequent_length_k_itemsets(transactions, min_support=0.2, k=1, frequent_
         all_items = all_items.union(transaction)
     length_k_itemsets = itertools.product(all_items, repeat=k)
     length_k_itemsets = frozenset(frozenset(itemset) for itemset in length_k_itemsets)
-    length_k_itemsets = set(filter(lambda itemset: len(itemset) == k, length_k_itemsets))
+    length_k_itemsets = frozenset(filter(lambda itemset: len(itemset) == k, length_k_itemsets))
     # Remove itemsets that don't have a frequent sub-itemset to take advantage
     # of the Apriori property
     if frequent_sub_itemsets:
