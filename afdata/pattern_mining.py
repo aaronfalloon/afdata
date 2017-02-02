@@ -70,24 +70,24 @@ def get_frequent_length_k_itemsets(transactions, min_support=0.2, k=1, frequent_
     all_items = set()
     for transaction in transactions:
         all_items = all_items.union(transaction)
-    length_k_itemsets = itertools.product(all_items, repeat=k)
-    length_k_itemsets = frozenset(frozenset(itemset) for itemset in length_k_itemsets)
-    length_k_itemsets = frozenset(filter(lambda itemset: len(itemset) == k, length_k_itemsets))
+    all_length_k_itemsets = itertools.product(all_items, repeat=k)
+    all_length_k_itemsets = frozenset(frozenset(itemset) for itemset in all_length_k_itemsets)
+    all_length_k_itemsets = frozenset(filter(lambda itemset: len(itemset) == k, all_length_k_itemsets))
     # Remove itemsets that don't have a frequent sub-itemset to take advantage
     # of the Apriori property
+    pruned_length_k_itemsets = all_length_k_itemsets
     if frequent_sub_itemsets:
-        to_remove = set()
-        for itemset in length_k_itemsets:
+        pruned_length_k_itemsets = set()
+        for itemset in all_length_k_itemsets:
             has_frequent_sub_itemset = False
             for sub_itemset in frequent_sub_itemsets:
-                if itemset.issuperset(sub_itemset):
+                if sub_itemset.issubset(itemset):
                     has_frequent_sub_itemset = True
-            if not has_frequent_sub_itemset:
-                to_remove.add(itemset)
-        length_k_itemsets = length_k_itemsets.difference(to_remove)
+            if has_frequent_sub_itemset:
+                pruned_length_k_itemsets.add(itemset)
     frequent_itemsets = []
     supports = []
-    for itemset in length_k_itemsets:
+    for itemset in pruned_length_k_itemsets:
         itemset_support = support(itemset, transactions)
         if itemset_support >= min_support:
             frequent_itemsets.append(itemset)
