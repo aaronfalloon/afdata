@@ -158,18 +158,16 @@ class PatternMining(unittest.TestCase):
                 transactions,
                 k=2,
                 frequent_sub_itemsets=frozenset([
+                    frozenset(['bread']),
                     frozenset(['jam'])
                 ])
             )
 
         assert_expected_itemsets_supports(frequent_itemsets_1, supports_1, [
-            (frozenset(['milk', 'bread']), 2 / 7),
-            (frozenset(['bread', 'butter']), 3 / 7),
-            (frozenset(['bread', 'jam']), 2 / 7)
+            (frozenset(['milk', 'bread']), 2 / 7)
         ])
         assert_expected_itemsets_supports(frequent_itemsets_2, supports_2, [
-            (frozenset(['bread', 'jam']), 2 / 7),
-            (frozenset(['butter', 'jam']), 2 / 7)
+            (frozenset(['bread', 'jam']), 2 / 7)
         ])
 
     def test_raises_exception_when_k_set_to_0(self):

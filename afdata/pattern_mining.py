@@ -75,8 +75,12 @@ def get_frequent_length_k_itemsets(transactions, min_support=0.2, k=1, frequent_
     if k <= 0:
         raise ValueError('k must be greater than 0')
     all_items = set()
-    for transaction in transactions:
-        all_items = all_items.union(transaction)
+    if frequent_sub_itemsets:
+        for sub_itemset in frequent_sub_itemsets:
+            all_items = all_items.union(sub_itemset)
+    else:
+        for transaction in transactions:
+            all_items = all_items.union(transaction)
     all_length_k_itemsets = itertools.product(all_items, repeat=k)
     all_length_k_itemsets = frozenset(frozenset(itemset) for itemset in all_length_k_itemsets)
     all_length_k_itemsets = frozenset(filter(lambda itemset: len(itemset) == k, all_length_k_itemsets))
