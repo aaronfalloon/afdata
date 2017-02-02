@@ -11,6 +11,29 @@ transactions = [
     ['butter', 'bread', 'jam']
 ]
 
+"""Asserts that all the expected itemsets and their supports exist.
+
+The order of the itemsets and supports doesn't matter. What matters is that each
+itemset and its support has the same list index.
+
+Parameters
+----------
+itemsets : list of frozenset
+supports : list of float
+expected : list of tuple
+    First item in tuple is itemset and second is its support.
+
+Returns
+-------
+bool
+"""
+def assert_expected_itemsets_supports(itemsets, supports, expected):
+    for itemset in expected:
+        index = itemsets.index(itemset[0])
+        if supports[index] != itemset[1]:
+            raise Exception('Expected itemset and support doesn\'t exist')
+
+
 class PatternMining(unittest.TestCase):
     def test_returns_support_for_itemset_milk_bread(self):
         support = pattern_mining.support(frozenset(['milk', 'bread']), transactions)
@@ -63,80 +86,50 @@ class PatternMining(unittest.TestCase):
 
         self.assertEqual(confidence, 0)
 
-    def test_returns_frequent_length_k_itemsets(self):
-        frequent_itemsets = \
+    def test_returns_frequent_length_k_itemsets_and_supports(self):
+        frequent_itemsets, supports = \
             pattern_mining.get_frequent_length_k_itemsets(transactions)
 
-        self.assertCountEqual(frequent_itemsets, [
-            {
-                'itemset': frozenset(['milk']),
-                'support': 2 / 7
-            },
-            {
-                'itemset': frozenset(['bread']),
-                'support': 5 / 7
-            },
-            {
-                'itemset': frozenset(['butter']),
-                'support': 4 / 7
-            },
-            {
-                'itemset': frozenset(['jam']),
-                'support': 2 / 7
-            }
+        assert_expected_itemsets_supports(frequent_itemsets, supports, [
+            (frozenset(['milk']), 2 / 7),
+            (frozenset(['bread']), 5 / 7),
+            (frozenset(['butter']), 4 / 7),
+            (frozenset(['jam']), 2 / 7)
         ])
 
-    def test_returns_frequent_length_2_itemsets(self):
-        frequent_itemsets = \
+    def test_returns_frequent_length_2_itemsets_and_supports(self):
+        frequent_itemsets, supports = \
             pattern_mining.get_frequent_length_k_itemsets(transactions, k=2)
 
-        self.assertCountEqual(frequent_itemsets, [
-            {
-                'itemset': frozenset(['milk', 'bread']),
-                'support': 2 / 7
-            },
-            {
-                'itemset': frozenset(['bread', 'butter']),
-                'support': 3 / 7
-            },
-            {
-                'itemset': frozenset(['bread', 'jam']),
-                'support': 2 / 7
-            },
-            {
-                'itemset': frozenset(['butter', 'jam']),
-                'support': 2 / 7
-            }
+        assert_expected_itemsets_supports(frequent_itemsets, supports, [
+            (frozenset(['milk', 'bread']), 2 / 7),
+            (frozenset(['bread', 'butter']), 3 / 7),
+            (frozenset(['bread', 'jam']), 2 / 7),
+            (frozenset(['butter', 'jam']), 2 / 7)
         ])
 
-    def test_returns_frequent_length_3_itemsets(self):
-        frequent_itemsets = \
+    def test_returns_frequent_length_3_itemsets_and_supports(self):
+        frequent_itemsets, supports = \
             pattern_mining.get_frequent_length_k_itemsets(transactions, k=3)
 
-        self.assertCountEqual(frequent_itemsets, [
-            {
-                'itemset': frozenset(['bread', 'butter', 'jam']),
-                'support': 2 / 7
-            }
+        assert_expected_itemsets_supports(frequent_itemsets, supports, [
+            (frozenset(['bread', 'butter', 'jam']), 2 / 7)
         ])
 
-    def test_returns_frequent_length_2_itemsets_with_min_support_0_4(self):
-        frequent_itemsets = \
+    def test_returns_frequent_length_2_itemsets_and_supports_with_min_support_0_4(self):
+        frequent_itemsets, supports = \
             pattern_mining.get_frequent_length_k_itemsets(
                 transactions,
                 min_support=0.4,
                 k=2
             )
 
-        self.assertCountEqual(frequent_itemsets, [
-            {
-                'itemset': frozenset(['bread', 'butter']),
-                'support': 3 / 7
-            }
+        assert_expected_itemsets_supports(frequent_itemsets, supports, [
+            (frozenset(['bread', 'butter']), 3 / 7)
         ])
 
     def test_considers_only_frequent_itemsets_that_have_frequent_sub_itemsets(self):
-        frequent_itemsets_1 = \
+        frequent_itemsets_1, supports_1 = \
             pattern_mining.get_frequent_length_k_itemsets(
                 transactions,
                 k=2,
@@ -145,7 +138,7 @@ class PatternMining(unittest.TestCase):
                     frozenset(['bread'])
                 ])
             )
-        frequent_itemsets_2 = \
+        frequent_itemsets_2, supports_2 = \
             pattern_mining.get_frequent_length_k_itemsets(
                 transactions,
                 k=2,
@@ -154,29 +147,14 @@ class PatternMining(unittest.TestCase):
                 ])
             )
 
-        self.assertCountEqual(frequent_itemsets_1, [
-            {
-                'itemset': frozenset(['milk', 'bread']),
-                'support': 2 / 7
-            },
-            {
-                'itemset': frozenset(['bread', 'butter']),
-                'support': 3 / 7
-            },
-            {
-                'itemset': frozenset(['bread', 'jam']),
-                'support': 2 / 7
-            }
+        assert_expected_itemsets_supports(frequent_itemsets_1, supports_1, [
+            (frozenset(['milk', 'bread']), 2 / 7),
+            (frozenset(['bread', 'butter']), 3 / 7),
+            (frozenset(['bread', 'jam']), 2 / 7)
         ])
-        self.assertCountEqual(frequent_itemsets_2, [
-            {
-                'itemset': frozenset(['bread', 'jam']),
-                'support': 2 / 7
-            },
-            {
-                'itemset': frozenset(['butter', 'jam']),
-                'support': 2 / 7
-            }
+        assert_expected_itemsets_supports(frequent_itemsets_2, supports_2, [
+            (frozenset(['bread', 'jam']), 2 / 7),
+            (frozenset(['butter', 'jam']), 2 / 7)
         ])
 
     def test_raises_exception_when_k_set_to_0(self):
@@ -195,74 +173,39 @@ class PatternMining(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'min_support must be greater than 0 and less than or equal to 1.0'):
             pattern_mining.get_frequent_length_k_itemsets(transactions, min_support=1.7)
 
-    def test_returns_frequent_itemsets(self):
-        frequent_itemsets = pattern_mining.get_frequent_itemsets(transactions)
+    def test_returns_frequent_itemsets_and_supports(self):
+        frequent_itemsets, supports = \
+            pattern_mining.get_frequent_itemsets(transactions)
 
-        self.assertCountEqual(frequent_itemsets, [
-            {
-                'itemset': frozenset(['milk']),
-                'support': 2 / 7
-            },
-            {
-                'itemset': frozenset(['bread']),
-                'support': 5 / 7
-            },
-            {
-                'itemset': frozenset(['butter']),
-                'support': 4 / 7
-            },
-            {
-                'itemset': frozenset(['jam']),
-                'support': 2 / 7
-            },
-            {
-                'itemset': frozenset(['milk', 'bread']),
-                'support': 2 / 7
-            },
-            {
-                'itemset': frozenset(['bread', 'butter']),
-                'support': 3 / 7
-            },
-            {
-                'itemset': frozenset(['bread', 'jam']),
-                'support': 2 / 7
-            },
-            {
-                'itemset': frozenset(['butter', 'jam']),
-                'support': 2 / 7
-            },
-            {
-                'itemset': frozenset(['bread', 'butter', 'jam']),
-                'support': 2 / 7
-            }
+        assert_expected_itemsets_supports(frequent_itemsets, supports, [
+            (frozenset(['milk']), 2 / 7),
+            (frozenset(['bread']), 5 / 7),
+            (frozenset(['butter']), 4 / 7),
+            (frozenset(['jam']), 2 / 7),
+            (frozenset(['milk', 'bread']), 2 / 7),
+            (frozenset(['bread', 'butter']), 3 / 7),
+            (frozenset(['bread', 'jam']), 2 / 7),
+            (frozenset(['butter', 'jam']), 2 / 7),
+            (frozenset(['bread', 'butter', 'jam']), 2 / 7)
         ])
 
-    def test_returns_frequent_itemsets_for_min_support_0_5(self):
-        frequent_itemsets = pattern_mining.get_frequent_itemsets(
+    def test_returns_frequent_itemsets_and_supports_for_min_support_0_5(self):
+        frequent_itemsets, supports = pattern_mining.get_frequent_itemsets(
             transactions,
             min_support=0.5
         )
 
-        self.assertCountEqual(frequent_itemsets, [
-            {
-                'itemset': frozenset(['bread']),
-                'support': 5 / 7
-            },
-            {
-                'itemset': frozenset(['butter']),
-                'support': 4 / 7
-            }
+        assert_expected_itemsets_supports(frequent_itemsets, supports, [
+            (frozenset(['bread']), 5 / 7),
+            (frozenset(['butter']), 4 / 7)
         ])
 
-    def test_returns_frequent_itemsets_for_min_support_0_6(self):
-        frequent_itemsets = pattern_mining.get_frequent_itemsets(
+    def test_returns_frequent_itemsets_and_supports_for_min_support_0_6(self):
+        frequent_itemsets, supports = pattern_mining.get_frequent_itemsets(
             transactions,
             min_support=0.6
         )
 
-        self.assertCountEqual(frequent_itemsets, [
-            {
-                'itemset': frozenset(['bread']),
-                'support': 5 / 7
-            }
+        assert_expected_itemsets_supports(frequent_itemsets, supports, [
+            (frozenset(['bread']), 5 / 7)
         ])

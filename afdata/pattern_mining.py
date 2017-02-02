@@ -60,9 +60,8 @@ def get_frequent_length_k_itemsets(transactions, min_support=0.2, k=1, frequent_
 
     Returns
     -------
-    list of dict
-        Each dict contains itemset and support keys. itemset is type frozenset
-        and support is type float.
+    list of frozenset
+    list of float
     """
     if min_support <= 0 or min_support > 1:
         raise ValueError('min_support must be greater than 0 and less than or equal to 1.0')
@@ -86,15 +85,14 @@ def get_frequent_length_k_itemsets(transactions, min_support=0.2, k=1, frequent_
             if not has_frequent_sub_itemset:
                 to_remove.add(itemset)
         length_k_itemsets = length_k_itemsets.difference(to_remove)
-    results = []
+    frequent_itemsets = []
+    supports = []
     for itemset in length_k_itemsets:
         itemset_support = support(itemset, transactions)
         if itemset_support >= min_support:
-            results.append({
-                'itemset': itemset,
-                'support': itemset_support
-            })
-    return results
+            frequent_itemsets.append(itemset)
+            supports.append(itemset_support)
+    return frequent_itemsets, supports
 
 def get_frequent_itemsets(transactions, min_support=0.2):
     """Returns all the itemsets, from the transactions, that satisfy
@@ -111,25 +109,25 @@ def get_frequent_itemsets(transactions, min_support=0.2):
 
     Returns
     -------
-    list of dict
-        Each dict contains itemset and support keys. itemset is type frozenset
-        and support is type float.
+    list of frozenset
+    list of float
     """
-    results = []
     k = 1
-    length_k_frequent_itemsets = get_frequent_length_k_itemsets(
+    length_k_frequent_itemsets, length_k_supports = get_frequent_length_k_itemsets(
         transactions,
         min_support=min_support,
         k=k
     )
-    results += length_k_frequent_itemsets
+    frequent_itemsets = length_k_frequent_itemsets
+    supports = length_k_supports
     while len(length_k_frequent_itemsets) > 0:
         k += 1
-        length_k_frequent_itemsets = get_frequent_length_k_itemsets(
+        length_k_frequent_itemsets, length_k_supports = get_frequent_length_k_itemsets(
             transactions,
             min_support=min_support,
             k=k,
-            frequent_sub_itemsets=frozenset([itemset['itemset'] for itemset in results])
+            frequent_sub_itemsets=length_k_frequent_itemsets
         )
-        results += length_k_frequent_itemsets
-    return results
+        frequent_itemsets += length_k_frequent_itemsets
+        supports += length_k_supports
+    return frequent_itemsets, supports
