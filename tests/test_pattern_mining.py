@@ -11,6 +11,19 @@ transactions = [
     ['butter', 'bread', 'jam']
 ]
 
+sequence_transactions = [
+    [['the'], ['service'], ['was'], ['poor']],
+    [['the'], ['service'], ['was'], ['OK']],
+    [['the'], ['service'], ['was'], ['terrible']],
+    [['pity'], ['about'], ['the'], ['service']],
+    [['9'], ['out'], ['of'], ['10'], ['for'], ['the'], ['pizza']],
+    [['the'], ['pizza'], ['is'], ['so'], ['good']],
+    [['seriously'], ['good'], ['pizza']],
+    [['the'], ['pizza'], ['was'], ['awesome'], ['shame'], ['about'], ['the'],
+        ['service']],
+    [['I'], ['will'], ['be'], ['back']]
+]
+
 """Asserts that all the expected itemsets and their supports exist.
 
 The order of the itemsets and supports doesn't matter. What matters is that each
@@ -64,6 +77,39 @@ class PatternMining(unittest.TestCase):
         supports = pattern_mining.support(transactions, [frozenset(['bread', 'tea'])])
 
         self.assertEqual(supports[frozenset(['bread', 'tea'])], 0)
+
+    def test_returns_true_when_candidate_is_subsequence(self):
+        self.assertTrue(pattern_mining.is_subsequence(sequence_transactions, (
+            frozenset(['was']),
+            frozenset(['poor']
+        ))))
+
+    def test_returns_false_when_candidate_is_not_subsequence(self):
+        self.assertFalse(pattern_mining.is_subsequence(sequence_transactions, (
+            frozenset(['was']),
+            frozenset(['great']
+        ))))
+
+    def test_returns_support_for_sequence_the_pizza(self):
+        sequence = (frozenset(['the']), frozenset(['pizza']))
+        supports = pattern_mining.sequence_support(sequence_transactions, [
+            sequence
+        ])
+
+        self.assertEqual(supports[sequence], 3 / 9)
+
+    def test_returns_support_for_sequence_the_service_was_poor(self):
+        sequence = (
+            frozenset(['the']),
+            frozenset(['service']),
+            frozenset(['was']),
+            frozenset(['poor'])
+        )
+        supports = pattern_mining.sequence_support(sequence_transactions, [
+            sequence
+        ])
+
+        self.assertEqual(supports[sequence], 1 / 9)
 
     def test_returns_confidence_for_rule_if_milk_then_bread(self):
         confidence = pattern_mining.confidence(

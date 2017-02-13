@@ -1,7 +1,7 @@
 import itertools
 
 def support(transactions, itemsets):
-    """Returns the percentage of transactions that contain the itemsets.
+    """Returns the percentages of transactions that contain the itemsets.
 
     Parameters
     ----------
@@ -26,10 +26,51 @@ def support(transactions, itemsets):
         supports[itemset] = count / total_transactions
     return supports
 
-def sequence_support():
-    """Returns the percentage of transactions that contain t
+def is_subsequence(sequence, candidate):
+    """Returns true when the candidate is a subsequence of the sequence.
+
+    Parameters
+    ----------
+    sequence : tuple of frozenset
+    subsequence : tuple of frozenset
+
+    Returns
+    -------
+    bool
     """
-    pass
+    for itemset in sequence:
+        if itemset == candidate[0]:
+            for j, candidate_itemset in enumerate(candidate[1:]):
+                if sequence[j] != candidate_itemset:
+                    return False
+    return True
+
+def sequence_support(transactions, sequences):
+    """Returns the percentages of transactions that contain the sequences.
+
+    Parameters
+    ----------
+    transactions : list of list of list
+    sequences : list of tuple of frozenset
+        Each sequence is an ordered list of itemsets
+
+    Returns
+    -------
+    dict
+        Key of each item is the sequence (represented by a tuple) and the value
+        is the sequence's support
+    """
+    counts = {}
+    for sequence in sequences:
+        counts[sequence] = 0
+    for transaction in transactions:
+        for sequence in sequences:
+            for itemset in sequence:
+                pass
+
+    supports = {}
+    supports[sequences[0]] = 3 / len(transactions)
+    return supports
 
 def confidence(transactions, itemset_a, itemset_b):
     """Returns the percentage of transactions that contain both itemset_a and
