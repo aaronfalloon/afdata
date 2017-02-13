@@ -11,7 +11,7 @@ def support(itemsets, transactions):
     Returns
     -------
     dict
-    Key of each item is the itemset and the value is the itemset's support
+        Key of each item is the itemset and the value is the itemset's support
     """
     counts = {}
     for itemset in itemsets:
