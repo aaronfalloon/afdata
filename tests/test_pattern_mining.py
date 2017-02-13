@@ -36,67 +36,67 @@ def assert_expected_itemsets_supports(itemsets, supports, expected):
 
 class PatternMining(unittest.TestCase):
     def test_returns_support_for_itemset_milk_bread(self):
-        supports = pattern_mining.support([
+        supports = pattern_mining.support(transactions, [
             frozenset(['milk', 'bread'])
-        ], transactions)
+        ])
 
         self.assertEqual(supports[frozenset(['milk', 'bread'])], 2 / 7)
 
     def test_returns_support_for_itemset_bread(self):
-        supports = pattern_mining.support([
+        supports = pattern_mining.support(transactions, [
             frozenset(['bread'])
-        ], transactions)
+        ])
 
         self.assertEqual(supports[frozenset(['bread'])], 5 / 7)
 
     def test_returns_support_for_itemsets_bread_and_milk_bread_and_bread_butter_jam(self):
-        supports = pattern_mining.support([
+        supports = pattern_mining.support(transactions, [
             frozenset(['bread']),
             frozenset(['milk', 'bread']),
             frozenset(['bread', 'butter', 'jam'])
-        ], transactions)
+        ])
 
         self.assertEqual(supports[frozenset(['bread'])], 5 / 7),
         self.assertEqual(supports[frozenset(['milk', 'bread'])], 2 / 7),
         self.assertEqual(supports[frozenset(['bread', 'butter', 'jam'])], 2 / 7)
 
     def test_returns_0_for_support_when_itemset_not_in_transactions(self):
-        supports = pattern_mining.support([frozenset(['bread', 'tea'])], transactions)
+        supports = pattern_mining.support(transactions, [frozenset(['bread', 'tea'])])
 
         self.assertEqual(supports[frozenset(['bread', 'tea'])], 0)
 
     def test_returns_confidence_for_rule_if_milk_then_bread(self):
         confidence = pattern_mining.confidence(
+            transactions,
             frozenset(['milk']),
-            frozenset(['bread']),
-            transactions
+            frozenset(['bread'])
         )
 
         self.assertEqual(confidence, (2 / 7) / (2 / 7))
 
     def test_returns_confidence_for_rule_if_bread_then_butter_jam(self):
         confidence = pattern_mining.confidence(
+            transactions,
             frozenset(['bread']),
-            frozenset(['butter', 'jam']),
-            transactions
+            frozenset(['butter', 'jam'])
         )
 
         self.assertEqual(confidence, (2 / 7) / (5 / 7))
 
     def test_returns_0_confidence_when_union_of_itemsets_has_0_support(self):
         confidence = pattern_mining.confidence(
+            transactions,
             frozenset(['bread']),
             frozenset(['butter', 'jam', 'tea']),
-            transactions
         )
 
         self.assertEqual(confidence, 0)
 
     def test_returns_0_for_confidence_when_itemset_a_has_0_support(self):
         confidence = pattern_mining.confidence(
+            transactions,
             frozenset(['bread', 'tea']),
             frozenset(['butter', 'jam']),
-            transactions
         )
 
         self.assertEqual(confidence, 0)

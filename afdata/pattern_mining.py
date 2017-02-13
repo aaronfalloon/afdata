@@ -1,12 +1,12 @@
 import itertools
 
-def support(itemsets, transactions):
+def support(transactions, itemsets):
     """Returns the percentage of transactions that contain the itemsets.
 
     Parameters
     ----------
-    itemsets : list of frozenset
     transactions : list of list
+    itemsets : list of frozenset
 
     Returns
     -------
@@ -26,26 +26,31 @@ def support(itemsets, transactions):
         supports[itemset] = count / total_transactions
     return supports
 
-def confidence(itemset_a, itemset_b, transactions):
+def sequence_support():
+    """Returns the percentage of transactions that contain t
+    """
+    pass
+
+def confidence(transactions, itemset_a, itemset_b):
     """Returns the percentage of transactions that contain both itemset_a and
     itemset_b.
 
     Parameters
     ----------
+    transactions : list of list
     itemset_a : frozenset
     itemset_b : frozenset
-    transactions : list of list
 
     Returns
     -------
     float
         Percentage of transactions that contain both itemset_a and itemset_b
     """
-    itemset_a_support = support([itemset_a], transactions)[itemset_a]
+    itemset_a_support = support(transactions, [itemset_a])[itemset_a]
     if itemset_a_support == 0:
         return 0
     itemset_a_union_b = itemset_a.union(itemset_b)
-    return support([itemset_a_union_b], transactions)[itemset_a_union_b] \
+    return support(transactions, [itemset_a_union_b])[itemset_a_union_b] \
         / itemset_a_support
 
 def get_frequent_length_k_itemsets(transactions, min_support=0.2, k=1, frequent_sub_itemsets=None):
@@ -98,7 +103,7 @@ def get_frequent_length_k_itemsets(transactions, min_support=0.2, k=1, frequent_
                 pruned_length_k_itemsets.add(itemset)
     frequent_itemsets = []
     frequent_supports = []
-    supports = support(pruned_length_k_itemsets, transactions)
+    supports = support(transactions, pruned_length_k_itemsets)
     for itemset, itemset_support in supports.items():
         if itemset_support >= min_support:
             frequent_itemsets.append(itemset)
@@ -142,3 +147,23 @@ def get_frequent_itemsets(transactions, min_support=0.2):
         frequent_itemsets += length_k_frequent_itemsets
         supports += length_k_supports
     return frequent_itemsets, supports
+
+def get_frequent_sequences():
+    """Returns all the sequences, from the transactions, that satisfy
+    min_support.
+
+    Uses the PrefixSpan algorithm.
+
+    Parameters
+    ----------
+    transactions : list of list of list
+        Each transaction represents a sequence and a sequence is an ordered list
+        of itemsets
+    min_support : float, optional
+        From 0.0 to 1.0. Percentage of transactions that should contain a
+        sequence for it to be considered frequent.
+
+    Returns
+    -------
+    """
+    pass
