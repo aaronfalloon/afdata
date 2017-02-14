@@ -41,11 +41,15 @@ def is_subsequence(sequence, candidate):
     is_subsequence = False
     for i, itemset in enumerate(sequence):
         if candidate[0].issubset(itemset):
-            is_subsequence = True
-            # Check for the rest of the candidate sequence
-            for j, candidate_itemset in enumerate(candidate[1:]):
-                if not candidate_itemset.issubset(sequence[i + (j + 1)]):
-                    is_subsequence = False
+            candidate_tail = candidate[1:]
+            # - 1 because the ith element has already been matched
+            sequence_tail_length = len(sequence) - i - 1
+            if not len(candidate_tail) > sequence_tail_length:
+                is_subsequence = True
+                # Check for the rest of the candidate sequence
+                for j, candidate_itemset in enumerate(candidate_tail):
+                    if not candidate_itemset.issubset(sequence[i + (j + 1)]):
+                        is_subsequence = False
     return is_subsequence
 
 def sequence_support(transactions, sequences):
@@ -68,9 +72,9 @@ def sequence_support(transactions, sequences):
         counts[sequence] = 0
     for transaction in transactions:
         for sequence in sequences:
-            for itemset in sequence:
-                pass
-
+            if is_subsequence(transaction, sequence):
+                counts[sequence] += 1
+    print(counts)
     supports = {}
     supports[sequences[0]] = 3 / len(transactions)
     return supports

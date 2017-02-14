@@ -20,7 +20,7 @@ sequence_transactions = [
     [['the'], ['pizza'], ['is'], ['so'], ['good']],
     [['seriously'], ['good'], ['pizza']],
     [['the'], ['pizza'], ['was'], ['awesome'], ['shame'], ['about'], ['the'],
-        ['terrible', 'service']],
+        ['terrible', 'poor', 'service']],
     [['I'], ['will'], ['be'], ['back']],
 ]
 
@@ -117,8 +117,23 @@ class PatternMining(unittest.TestCase):
             frozenset(['kind', 'of']),
             frozenset(['great']),
         )))
+
         self.assertFalse(pattern_mining.is_subsequence(sequence, (
             frozenset(['awesome']),
+        )))
+
+    def test_returns_false_when_candidate_starts_to_match_but_too_long(self):
+        sequence = [frozenset(itemset) for itemset in sequence_transactions[0]]
+
+        self.assertFalse(pattern_mining.is_subsequence(sequence, (
+            frozenset(['the']),
+            frozenset(['service']),
+            frozenset(['was']),
+            frozenset(['poor']),
+            frozenset(['many']),
+            frozenset(['ways']),
+            frozenset(['to']),
+            frozenset(['improve']),
         )))
 
     def test_returns_support_for_sequence_the_pizza(self):
@@ -134,6 +149,7 @@ class PatternMining(unittest.TestCase):
             frozenset(['the']),
             frozenset(['service']),
             frozenset(['was']),
+            frozenset(['kind', 'of']),
             frozenset(['poor']),
         )
         supports = pattern_mining.sequence_support(sequence_transactions, [
@@ -141,6 +157,9 @@ class PatternMining(unittest.TestCase):
         ])
 
         self.assertEqual(supports[sequence], 1 / 9)
+
+    def test_returns_support_for_sequence_that_appears_twice_in_one_transaction(self):
+        pass
 
     def test_returns_confidence_for_rule_if_milk_then_bread(self):
         confidence = pattern_mining.confidence(
