@@ -1,5 +1,6 @@
 import itertools
 
+
 def support(transactions, itemsets):
     """Returns the percentages of transactions that contain the itemsets.
 
@@ -25,6 +26,7 @@ def support(transactions, itemsets):
     for itemset, count in counts.items():
         supports[itemset] = count / total_transactions
     return supports
+
 
 def is_subsequence(sequence, candidate):
     """Returns true when the candidate is a subsequence of the sequence.
@@ -54,6 +56,7 @@ def is_subsequence(sequence, candidate):
                     return True
     return False
 
+
 def sequence_support(transactions, sequences):
     """Returns the percentages of transactions that contain the sequences.
 
@@ -82,6 +85,7 @@ def sequence_support(transactions, sequences):
         supports[sequence] = count / total_transactions
     return supports
 
+
 def confidence(transactions, itemset_a, itemset_b):
     """Returns the percentage of transactions that contain both itemset_a and
     itemset_b.
@@ -103,6 +107,7 @@ def confidence(transactions, itemset_a, itemset_b):
     itemset_a_union_b = itemset_a.union(itemset_b)
     return support(transactions, [itemset_a_union_b])[itemset_a_union_b] \
         / itemset_a_support
+
 
 def get_frequent_length_k_itemsets(transactions, min_support=0.2, k=1, frequent_sub_itemsets=None):
     """Returns all the length-k itemsets, from the transactions, that satisfy
@@ -161,6 +166,7 @@ def get_frequent_length_k_itemsets(transactions, min_support=0.2, k=1, frequent_
             frequent_supports.append(itemset_support)
     return frequent_itemsets, frequent_supports
 
+
 def get_frequent_itemsets(transactions, min_support=0.2):
     """Returns all the itemsets, from the transactions, that satisfy
     min_support.
@@ -198,6 +204,7 @@ def get_frequent_itemsets(transactions, min_support=0.2):
         frequent_itemsets += length_k_frequent_itemsets
         supports += length_k_supports
     return frequent_itemsets, supports
+
 
 def get_frequent_sequences():
     """Returns all the sequences, from the transactions, that satisfy

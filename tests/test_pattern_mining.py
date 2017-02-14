@@ -25,23 +25,24 @@ sequence_transactions = [
     [['burritos'], ['burritos']],
 ]
 
-"""Asserts that all the expected itemsets and their supports exist.
 
-The order of the itemsets and supports doesn't matter. What matters is that each
-itemset and its support has the same list index.
-
-Parameters
-----------
-itemsets : list of frozenset
-supports : list of float
-expected : list of tuple
-    First item in tuple is itemset and second is its support.
-
-Returns
--------
-bool
-"""
 def assert_expected_itemsets_supports(itemsets, supports, expected):
+    """Asserts that all the expected itemsets and their supports exist.
+
+    The order of the itemsets and supports doesn't matter. What matters is that each
+    itemset and its support has the same list index.
+
+    Parameters
+    ----------
+    itemsets : list of frozenset
+    supports : list of float
+    expected : list of tuple
+        First item in tuple is itemset and second is its support.
+
+    Returns
+    -------
+    bool
+    """
     for itemset in expected:
         index = itemsets.index(itemset[0])
         if supports[index] != itemset[1]:
