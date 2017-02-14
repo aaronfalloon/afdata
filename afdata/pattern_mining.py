@@ -38,12 +38,10 @@ def is_subsequence(sequence, candidate):
     -------
     bool
     """
-    is_subsequence = False
     for i, itemset in enumerate(sequence):
-        print(itemset)
         if candidate[0].issubset(itemset):
             candidate_tail = candidate[1:]
-            # - 1 because the ith element has already been matched
+            # Subtract 1 because the ith element has already been matched
             sequence_tail_length = len(sequence) - i - 1
             if not len(candidate_tail) > sequence_tail_length:
                 is_subsequence = True
@@ -51,7 +49,10 @@ def is_subsequence(sequence, candidate):
                 for j, candidate_itemset in enumerate(candidate_tail):
                     if not candidate_itemset.issubset(sequence[i + (j + 1)]):
                         is_subsequence = False
-    return is_subsequence
+                        break
+                if is_subsequence:
+                    return True
+    return False
 
 def sequence_support(transactions, sequences):
     """Returns the percentages of transactions that contain the sequences.

@@ -109,6 +109,14 @@ class PatternMining(unittest.TestCase):
             frozenset(['terrible', 'service']),
         )))
 
+    def test_returns_true_as_soon_as_candidate_determined_to_be_subsequence(self):
+        sequence = [frozenset(itemset) for itemset in sequence_transactions[7]]
+
+        self.assertTrue(pattern_mining.is_subsequence(sequence, (
+            frozenset(['the']),
+            frozenset(['pizza']),
+        )))
+
     def test_returns_false_when_candidate_is_not_subsequence(self):
         sequence = [frozenset(itemset) for itemset in sequence_transactions[0]]
 
