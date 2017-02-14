@@ -40,6 +40,7 @@ def is_subsequence(sequence, candidate):
     """
     is_subsequence = False
     for i, itemset in enumerate(sequence):
+        print(itemset)
         if candidate[0].issubset(itemset):
             candidate_tail = candidate[1:]
             # - 1 because the ith element has already been matched
@@ -74,9 +75,10 @@ def sequence_support(transactions, sequences):
         for sequence in sequences:
             if is_subsequence(transaction, sequence):
                 counts[sequence] += 1
-    print(counts)
+    total_transactions = len(transactions)
     supports = {}
-    supports[sequences[0]] = 3 / len(transactions)
+    for sequence, count in counts.items():
+        supports[sequence] = count / total_transactions
     return supports
 
 def confidence(transactions, itemset_a, itemset_b):
