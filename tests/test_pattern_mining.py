@@ -22,6 +22,7 @@ sequence_transactions = [
     [['the'], ['pizza'], ['was'], ['awesome'], ['shame'], ['about'], ['the'],
         ['terrible', 'poor', 'service']],
     [['I'], ['will'], ['be'], ['back']],
+    [['burritos'], ['burritos']],
 ]
 
 """Asserts that all the expected itemsets and their supports exist.
@@ -146,11 +147,12 @@ class PatternMining(unittest.TestCase):
 
     def test_returns_support_for_sequence_the_pizza(self):
         sequence = (frozenset(['the']), frozenset(['pizza']))
+
         supports = pattern_mining.sequence_support(sequence_transactions, [
-            sequence
+            sequence,
         ])
 
-        self.assertEqual(supports[sequence], 3 / 9)
+        self.assertEqual(supports[sequence], 3 / 10)
 
     def test_returns_support_for_sequence_the_service_was_poor(self):
         sequence = (
@@ -160,14 +162,55 @@ class PatternMining(unittest.TestCase):
             frozenset(['kind', 'of']),
             frozenset(['poor']),
         )
+
         supports = pattern_mining.sequence_support(sequence_transactions, [
-            sequence
+            sequence,
         ])
 
-        self.assertEqual(supports[sequence], 1 / 9)
+        self.assertEqual(supports[sequence], 1 / 10)
 
     def test_returns_support_for_sequence_that_appears_twice_in_one_transaction(self):
-        pass
+        sequence = (
+            frozenset(['burritos']),
+        )
+
+        supports = pattern_mining.sequence_support(sequence_transactions, [
+            sequence,
+        ])
+
+        self.assertEqual(supports[sequence], 1 / 10)
+
+    def test_returns_support_for_sequences(self):
+        sequence_1 = (
+            frozenset(['9']),
+            frozenset(['out']),
+            frozenset(['of']),
+            frozenset(['10']),
+        )
+        sequence_2 = (
+            frozenset(['the']),
+            frozenset(['pizza']),
+        )
+
+        supports = pattern_mining.sequence_support(sequence_transactions, [
+            sequence_1,
+            sequence_2,
+        ])
+
+        self.assertEqual(supports[sequence_1], 1 / 10)
+        self.assertEqual(supports[sequence_2], 3 / 10)
+
+    def test_returns_support_when_sequence_not_in_transactions(self):
+        sequence = (
+            frozenset(['top']),
+            frozenset(['curry']),
+        )
+
+        supports = pattern_mining.sequence_support(sequence_transactions, [
+            sequence,
+        ])
+
+        self.assertEqual(supports[sequence], 0)
 
     def test_returns_confidence_for_rule_if_milk_then_bread(self):
         confidence = pattern_mining.confidence(
