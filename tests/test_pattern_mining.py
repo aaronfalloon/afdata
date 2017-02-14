@@ -12,7 +12,7 @@ transactions = [
 ]
 
 sequence_transactions = [
-    [['the'], ['service'], ['was'], ['poor']],
+    [['the'], ['service', 'to', 'be', 'honest'], ['was'], ['kind', 'of'], ['poor']],
     [['the'], ['service'], ['was'], ['OK']],
     [['the'], ['service'], ['was'], ['terrible']],
     [['pity'], ['about'], ['the'], ['service']],
@@ -20,7 +20,7 @@ sequence_transactions = [
     [['the'], ['pizza'], ['is'], ['so'], ['good']],
     [['seriously'], ['good'], ['pizza']],
     [['the'], ['pizza'], ['was'], ['awesome'], ['shame'], ['about'], ['the'],
-        ['service']],
+        ['terrible', 'service']],
     [['I'], ['will'], ['be'], ['back']],
 ]
 
@@ -82,16 +82,20 @@ class PatternMining(unittest.TestCase):
         sequence = [frozenset(itemset) for itemset in sequence_transactions[0]]
 
         self.assertTrue(pattern_mining.is_subsequence(sequence, (
+            frozenset(['kind', 'of']),
             frozenset(['poor']),
         )))
         self.assertTrue(pattern_mining.is_subsequence(sequence, (
+            frozenset(['honest']),
             frozenset(['was']),
+            frozenset(['of']),
             frozenset(['poor']),
         )))
         self.assertTrue(pattern_mining.is_subsequence(sequence, (
             frozenset(['the']),
             frozenset(['service']),
             frozenset(['was']),
+            frozenset([]),
             frozenset(['poor']),
         )))
 
@@ -102,7 +106,7 @@ class PatternMining(unittest.TestCase):
 
         self.assertTrue(pattern_mining.is_subsequence(sequence, (
             frozenset(['the']),
-            frozenset(['service']),
+            frozenset(['terrible', 'service']),
         )))
 
     def test_returns_false_when_candidate_is_not_subsequence(self):
@@ -110,6 +114,7 @@ class PatternMining(unittest.TestCase):
 
         self.assertFalse(pattern_mining.is_subsequence(sequence, (
             frozenset(['was']),
+            frozenset(['kind', 'of']),
             frozenset(['great']),
         )))
         self.assertFalse(pattern_mining.is_subsequence(sequence, (

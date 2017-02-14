@@ -40,11 +40,11 @@ def is_subsequence(sequence, candidate):
     """
     is_subsequence = False
     for i, itemset in enumerate(sequence):
-        if itemset == candidate[0]:
+        if candidate[0].issubset(itemset):
             is_subsequence = True
             # Check for the rest of the candidate sequence
             for j, candidate_itemset in enumerate(candidate[1:]):
-                if sequence[i + (j + 1)] != candidate_itemset:
+                if not candidate_itemset.issubset(sequence[i + (j + 1)]):
                     is_subsequence = False
     return is_subsequence
 
