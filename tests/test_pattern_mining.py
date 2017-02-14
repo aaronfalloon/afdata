@@ -8,7 +8,7 @@ transactions = [
     ['milk', 'bread', 'butter'],
     ['bread'],
     ['butter', 'bread', 'jam'],
-    ['butter', 'bread', 'jam']
+    ['butter', 'bread', 'jam'],
 ]
 
 sequence_transactions = [
@@ -21,7 +21,7 @@ sequence_transactions = [
     [['seriously'], ['good'], ['pizza']],
     [['the'], ['pizza'], ['was'], ['awesome'], ['shame'], ['about'], ['the'],
         ['service']],
-    [['I'], ['will'], ['be'], ['back']]
+    [['I'], ['will'], ['be'], ['back']],
 ]
 
 """Asserts that all the expected itemsets and their supports exist.
@@ -50,14 +50,14 @@ def assert_expected_itemsets_supports(itemsets, supports, expected):
 class PatternMining(unittest.TestCase):
     def test_returns_support_for_itemset_milk_bread(self):
         supports = pattern_mining.support(transactions, [
-            frozenset(['milk', 'bread'])
+            frozenset(['milk', 'bread']),
         ])
 
         self.assertEqual(supports[frozenset(['milk', 'bread'])], 2 / 7)
 
     def test_returns_support_for_itemset_bread(self):
         supports = pattern_mining.support(transactions, [
-            frozenset(['bread'])
+            frozenset(['bread']),
         ])
 
         self.assertEqual(supports[frozenset(['bread'])], 5 / 7)
@@ -66,7 +66,7 @@ class PatternMining(unittest.TestCase):
         supports = pattern_mining.support(transactions, [
             frozenset(['bread']),
             frozenset(['milk', 'bread']),
-            frozenset(['bread', 'butter', 'jam'])
+            frozenset(['bread', 'butter', 'jam']),
         ])
 
         self.assertEqual(supports[frozenset(['bread'])], 5 / 7),
@@ -79,16 +79,42 @@ class PatternMining(unittest.TestCase):
         self.assertEqual(supports[frozenset(['bread', 'tea'])], 0)
 
     def test_returns_true_when_candidate_is_subsequence(self):
-        self.assertTrue(pattern_mining.is_subsequence(sequence_transactions, (
+        sequence = [frozenset(itemset) for itemset in sequence_transactions[0]]
+
+        self.assertTrue(pattern_mining.is_subsequence(sequence, (
+            frozenset(['poor']),
+        )))
+        self.assertTrue(pattern_mining.is_subsequence(sequence, (
             frozenset(['was']),
-            frozenset(['poor']
-        ))))
+            frozenset(['poor']),
+        )))
+        self.assertTrue(pattern_mining.is_subsequence(sequence, (
+            frozenset(['the']),
+            frozenset(['service']),
+            frozenset(['was']),
+            frozenset(['poor']),
+        )))
+
+    def test_returns_true_when_candidate_is_subsequence_even_with_false_start(self):
+        # This sequence has two instances of "the". Hence, the notion of a false
+        # start.
+        sequence = [frozenset(itemset) for itemset in sequence_transactions[7]]
+
+        self.assertTrue(pattern_mining.is_subsequence(sequence, (
+            frozenset(['the']),
+            frozenset(['service']),
+        )))
 
     def test_returns_false_when_candidate_is_not_subsequence(self):
-        self.assertFalse(pattern_mining.is_subsequence(sequence_transactions, (
+        sequence = [frozenset(itemset) for itemset in sequence_transactions[0]]
+
+        self.assertFalse(pattern_mining.is_subsequence(sequence, (
             frozenset(['was']),
-            frozenset(['great']
-        ))))
+            frozenset(['great']),
+        )))
+        self.assertFalse(pattern_mining.is_subsequence(sequence, (
+            frozenset(['awesome']),
+        )))
 
     def test_returns_support_for_sequence_the_pizza(self):
         sequence = (frozenset(['the']), frozenset(['pizza']))
@@ -103,7 +129,7 @@ class PatternMining(unittest.TestCase):
             frozenset(['the']),
             frozenset(['service']),
             frozenset(['was']),
-            frozenset(['poor'])
+            frozenset(['poor']),
         )
         supports = pattern_mining.sequence_support(sequence_transactions, [
             sequence
@@ -115,7 +141,7 @@ class PatternMining(unittest.TestCase):
         confidence = pattern_mining.confidence(
             transactions,
             frozenset(['milk']),
-            frozenset(['bread'])
+            frozenset(['bread']),
         )
 
         self.assertEqual(confidence, (2 / 7) / (2 / 7))
@@ -124,7 +150,7 @@ class PatternMining(unittest.TestCase):
         confidence = pattern_mining.confidence(
             transactions,
             frozenset(['bread']),
-            frozenset(['butter', 'jam'])
+            frozenset(['butter', 'jam']),
         )
 
         self.assertEqual(confidence, (2 / 7) / (5 / 7))
@@ -155,7 +181,7 @@ class PatternMining(unittest.TestCase):
             (frozenset(['milk']), 2 / 7),
             (frozenset(['bread']), 5 / 7),
             (frozenset(['butter']), 4 / 7),
-            (frozenset(['jam']), 2 / 7)
+            (frozenset(['jam']), 2 / 7),
         ])
 
     def test_returns_frequent_length_2_itemsets_and_supports(self):
@@ -166,7 +192,7 @@ class PatternMining(unittest.TestCase):
             (frozenset(['milk', 'bread']), 2 / 7),
             (frozenset(['bread', 'butter']), 3 / 7),
             (frozenset(['bread', 'jam']), 2 / 7),
-            (frozenset(['butter', 'jam']), 2 / 7)
+            (frozenset(['butter', 'jam']), 2 / 7),
         ])
 
     def test_returns_frequent_length_3_itemsets_and_supports(self):
@@ -174,7 +200,7 @@ class PatternMining(unittest.TestCase):
             pattern_mining.get_frequent_length_k_itemsets(transactions, k=3)
 
         assert_expected_itemsets_supports(frequent_itemsets, supports, [
-            (frozenset(['bread', 'butter', 'jam']), 2 / 7)
+            (frozenset(['bread', 'butter', 'jam']), 2 / 7),
         ])
 
     def test_returns_frequent_length_2_itemsets_and_supports_with_min_support_0_4(self):
@@ -186,7 +212,7 @@ class PatternMining(unittest.TestCase):
             )
 
         assert_expected_itemsets_supports(frequent_itemsets, supports, [
-            (frozenset(['bread', 'butter']), 3 / 7)
+            (frozenset(['bread', 'butter']), 3 / 7),
         ])
 
     def test_considers_only_frequent_itemsets_that_have_frequent_sub_itemsets(self):
@@ -196,7 +222,7 @@ class PatternMining(unittest.TestCase):
                 k=2,
                 frequent_sub_itemsets=frozenset([
                     frozenset(['milk']),
-                    frozenset(['bread'])
+                    frozenset(['bread']),
                 ])
             )
         frequent_itemsets_2, supports_2 = \
@@ -205,15 +231,15 @@ class PatternMining(unittest.TestCase):
                 k=2,
                 frequent_sub_itemsets=frozenset([
                     frozenset(['bread']),
-                    frozenset(['jam'])
+                    frozenset(['jam']),
                 ])
             )
 
         assert_expected_itemsets_supports(frequent_itemsets_1, supports_1, [
-            (frozenset(['milk', 'bread']), 2 / 7)
+            (frozenset(['milk', 'bread']), 2 / 7),
         ])
         assert_expected_itemsets_supports(frequent_itemsets_2, supports_2, [
-            (frozenset(['bread', 'jam']), 2 / 7)
+            (frozenset(['bread', 'jam']), 2 / 7),
         ])
 
     def test_raises_exception_when_k_set_to_0(self):
@@ -245,7 +271,7 @@ class PatternMining(unittest.TestCase):
             (frozenset(['bread', 'butter']), 3 / 7),
             (frozenset(['bread', 'jam']), 2 / 7),
             (frozenset(['butter', 'jam']), 2 / 7),
-            (frozenset(['bread', 'butter', 'jam']), 2 / 7)
+            (frozenset(['bread', 'butter', 'jam']), 2 / 7),
         ])
 
     def test_returns_frequent_itemsets_and_supports_for_min_support_0_5(self):
@@ -256,7 +282,7 @@ class PatternMining(unittest.TestCase):
 
         assert_expected_itemsets_supports(frequent_itemsets, supports, [
             (frozenset(['bread']), 5 / 7),
-            (frozenset(['butter']), 4 / 7)
+            (frozenset(['butter']), 4 / 7),
         ])
 
     def test_returns_frequent_itemsets_and_supports_for_min_support_0_6(self):
@@ -266,5 +292,5 @@ class PatternMining(unittest.TestCase):
         )
 
         assert_expected_itemsets_supports(frequent_itemsets, supports, [
-            (frozenset(['bread']), 5 / 7)
+            (frozenset(['bread']), 5 / 7),
         ])
