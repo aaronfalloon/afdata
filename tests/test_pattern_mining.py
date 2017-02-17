@@ -12,7 +12,8 @@ transactions = [
 ]
 
 sequence_transactions = [
-    [['the'], ['service', 'to', 'be', 'honest'], ['was'], ['kind', 'of'], ['poor']],
+    [['the'], ['service', 'to', 'be', 'honest'], ['was'], ['kind', 'of'],
+        ['poor']],
     [['the'], ['service'], ['was'], ['OK']],
     [['the'], ['service'], ['was'], ['terrible']],
     [['pity'], ['about'], ['the'], ['service']],
@@ -47,6 +48,31 @@ def assert_expected_itemsets_supports(itemsets, supports, expected):
         index = itemsets.index(itemset[0])
         if supports[index] != itemset[1]:
             raise Exception('Expected itemset and support doesn\'t exist')
+
+
+def assert_expected_sequences_supports(sequences, supports, expected):
+    """Asserts that all the expected sequences and their supports exist.
+
+    The order of the sequences and supports doesn't matter. What matters is that
+    each
+    itemset and its support has the same list index.
+
+    Parameters
+    ----------
+    sequences : list of tuple of frozenset
+    supports : list of float
+    expected : list of tuple
+        First item in the tuple is the sequence (tuple of frozenset) and the
+        second is its support.
+
+    Returns
+    -------
+    bool
+    """
+    for sequence, support in expected:
+        index = itemsets.index(sequence[0])
+        if supports[index] != support:
+            raise Exception('Expected sequence and support doesn\'t exist')
 
 
 class PatternMining(unittest.TestCase):
@@ -369,4 +395,66 @@ class PatternMining(unittest.TestCase):
 
         assert_expected_itemsets_supports(frequent_itemsets, supports, [
             (frozenset(['bread']), 5 / 7),
+        ])
+
+    def test_returns_frequent_length_1_sequences_and_supports(self):
+        frequent_sequences, supports = \
+            pattern_mining.get_frequent_length_k_sequences(
+                sequence_transactions,
+                k=1
+            )
+
+        assert_expected_sequences_supports(frequent_sequences, supports, [
+            ((frozenset(['the']), ), 7 / 10),
+            ((frozenset(['service']), ), 5 / 10),
+            ((frozenset(['be']), ), 2 / 10),
+            ((frozenset(['was']), ), 4 / 10),
+            ((frozenset(['of']), ), 2 / 10),
+            ((frozenset(['poor']), ), 2 / 10),
+            ((frozenset(['terrible']), ), 2 / 10),
+            ((frozenset(['about']), ), 2 / 10),
+            ((frozenset(['pizza']), ), 4 / 10),
+            ((frozenset(['good']), ), 2 / 10),
+        ])
+
+    def test_returns_frequent_sequences_and_supports(self):
+        frequent_sequences, supports = pattern_mining.get_frequent_sequences(
+            sequence_transactions
+        )
+
+        self.assertCountEqual(frequent_sequences, [
+            (frozenset(['the'])),
+            (frozenset(['service'])),
+            (frozenset(['be'])),
+            (frozenset(['was'])),
+            (frozenset(['of'])),
+            (frozenset(['poor'])),
+            (frozenset(['terrible'])),
+            (frozenset(['about'])),
+            (frozenset(['pizza'])),
+            (frozenset(['good'])),
+            (frozenset(['the']), frozenset(['service'])),
+            (frozenset(['service']), frozenset(['was'])),
+            (frozenset(['service']), frozenset(['was'])),
+            (frozenset(['the']), frozenset(['pizza'])),
+            (frozenset(['the']), frozenset(['pizza'])),
+            (frozenset(['the']), frozenset(['service']), frozenset(['was']))
+        ])
+        self.assertCountEqual(frequent_sequences, [
+            7 / 10,
+            5 / 10,
+            2 / 10,
+            4 / 10,
+            2 / 10,
+            2 / 10,
+            2 / 10,
+            2 / 10,
+            4 / 10,
+            2 / 10,
+            4 / 10,
+            3 / 10,
+            3 / 10,
+            2 / 10,
+            2 / 10,
+            3 / 10,
         ])

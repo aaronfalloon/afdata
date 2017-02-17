@@ -1,4 +1,5 @@
 import itertools
+import operator
 
 
 def support(transactions, itemsets):
@@ -206,11 +207,15 @@ def get_frequent_itemsets(transactions, min_support=0.2):
     return frequent_itemsets, supports
 
 
-def get_frequent_sequences():
+def get_frequent_length_k_sequences(transactions, min_support=0.2, k=1, frequent_sub_sequences=None):
+    pass
+
+
+def get_frequent_sequences(transactions, prefix=None):
     """Returns all the sequences, from the transactions, that satisfy
     min_support.
 
-    Uses the PrefixSpan algorithm.
+    Uses the GSP algorithm.
 
     Parameters
     ----------
@@ -223,5 +228,21 @@ def get_frequent_sequences():
 
     Returns
     -------
+    list of tuple of frozenset
+        Frequent sequences
+    list of float
+        Supports of the frequent sequences
     """
-    pass
+    items = set()
+    for transaction in transactions:
+        for itemset in transaction:
+            items = items.union(itemset)
+    sequences = []
+    for item in items:
+        sequences.append((frozenset([item]), ))
+    supports = sequence_support(transactions, sequences)
+    sorted_supports = sorted(supports.items(), key=operator.itemgetter(1), reverse=True)
+    frequent_length_1_sequences = [sequence for sequence, support in sorted_supports if support >= 0.2]
+    for frequent_length_1_sequence in frequent_length_1_sequences:
+        print(frequent_length_1_sequence)
+    return [], []
