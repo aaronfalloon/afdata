@@ -207,8 +207,73 @@ def get_frequent_itemsets(transactions, min_support=0.2):
     return frequent_itemsets, supports
 
 
+def generate_candidate_sequences(items, k):
+    """Generates length-k candidate sequences from the items.
+
+    Parameters
+    ----------
+    items : frozenset
+    k : int
+        Length that each candidate sequence should be
+
+    Returns
+    -------
+    list of tuple of frozenset
+        Each tuple is a candidate sequence
+    """
+    candidates = []
+    for product_element in itertools.product(items, repeat=k):
+        candidate = []
+        for item in product_element:
+            candidate.append(frozenset([item]))
+        candidates.append(tuple(candidate))
+    for combination_element in itertools.combinations(items, r=k):
+        element = []
+        for item in combination_element:
+            element.append(item)
+        candidates.append((frozenset(element), ))
+    for candidate in candidates:
+        print(candidate)
+    return candidates
+
+
 def get_frequent_length_k_sequences(transactions, min_support=0.2, k=1, frequent_sub_sequences=None):
-    pass
+    """Returns all the sequences, from the transactions, that satisfy
+    min_support
+
+    Parameters
+    ----------
+    transactions : list of list of list
+    min_support : float, optional
+        From 0.0 to 1.0. Percentage of transactions that should contain a
+        sequence for it to be considered frequent.
+    k : int, optional
+        Length that the frequent sequences should be
+    frequent_sub_sequences : frozenset of tuple of frozenset, optional
+        Facilitates candidate pruning by the Apriori property. Length-k sequence
+        candidates that aren't supersets of at least 1 frequent sub-sequences
+        are pruned.
+
+    Returns
+    -------
+    list of frozenset
+    list of float
+    """
+    items = set()
+    for transaction in transactions:
+        for itemset in transaction:
+            items = items.union(itemset)
+    sequences = []
+    for item in items:
+        sequences.append((frozenset([item]), ))
+    supports = sequence_support(transactions, sequences)
+    frequent_length_k_sequences = []
+    frequent_supports = []
+    for sequence, support in supports.items():
+        if support >= 0.2:
+            frequent_length_k_sequences.append(sequence)
+            frequent_supports.append(support)
+    return frequent_length_k_sequences, frequent_supports
 
 
 def get_frequent_sequences(transactions, prefix=None):

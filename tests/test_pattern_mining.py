@@ -70,7 +70,7 @@ def assert_expected_sequences_supports(sequences, supports, expected):
     bool
     """
     for sequence, support in expected:
-        index = itemsets.index(sequence[0])
+        index = sequences.index(sequence)
         if supports[index] != support:
             raise Exception('Expected sequence and support doesn\'t exist')
 
@@ -397,6 +397,108 @@ class PatternMining(unittest.TestCase):
             (frozenset(['bread']), 5 / 7),
         ])
 
+    def test_generates_length_1_candidate_sequences_from_1_item(self):
+        candidate_sequences = pattern_mining.generate_candidate_sequences(frozenset(['item 1']), 1)
+
+        self.assertCountEqual(candidate_sequences, [
+            (frozenset(['item 1']), )
+        ])
+
+    def test_generates_length_2_candidate_sequences_from_1_item(self):
+        candidate_sequences = pattern_mining.generate_candidate_sequences(frozenset(['item 1']), 2)
+
+        self.assertCountEqual(candidate_sequences, [
+            (frozenset(['item 1']), frozenset(['item 1']))
+        ])
+
+    def test_generates_length_3_candidate_sequences_from_1_item(self):
+        candidate_sequences = pattern_mining.generate_candidate_sequences(frozenset(['item 1']), 3)
+
+        self.assertCountEqual(candidate_sequences, [
+            (frozenset(['item 1']), frozenset(['item 1']), frozenset(['item 1']))
+        ])
+
+    def test_generates_length_1_candidate_sequences_from_2_items(self):
+        candidate_sequences = pattern_mining.generate_candidate_sequences(
+            frozenset(['item 1', 'item 2']),
+            k=1
+        )
+
+        self.assertCountEqual(candidate_sequences, [
+            (frozenset(['item 1']), ),
+            (frozenset(['item 2']), ),
+        ])
+
+    def test_generates_length_2_candidate_sequences_from_2_items(self):
+        candidate_sequences = pattern_mining.generate_candidate_sequences(
+            frozenset(['item 1', 'item 2']),
+            k=2
+        )
+
+        self.assertCountEqual(candidate_sequences, [
+            (frozenset(['item 1']), frozenset(['item 2'])),
+            (frozenset(['item 1']), frozenset(['item 1'])),
+            (frozenset(['item 2']), frozenset(['item 1'])),
+            (frozenset(['item 2']), frozenset(['item 2'])),
+            (frozenset(['item 1', 'item 2']), ),
+        ])
+
+    def test_generates_length_3_candidate_sequences_from_2_items(self):
+        candidate_sequences = pattern_mining.generate_candidate_sequences(
+            frozenset(['item 1', 'item 2']),
+            k=3
+        )
+
+        self.assertCountEqual(candidate_sequences, [
+            (frozenset(['item 1']), frozenset(['item 2']), frozenset(['item 1'])),
+            (frozenset(['item 1']), frozenset(['item 2']), frozenset(['item 2'])),
+            (frozenset(['item 1']), frozenset(['item 1']), frozenset(['item 2'])),
+            (frozenset(['item 1']), frozenset(['item 1']), frozenset(['item 1'])),
+            (frozenset(['item 2']), frozenset(['item 1']), frozenset(['item 1'])),
+            (frozenset(['item 2']), frozenset(['item 1']), frozenset(['item 2'])),
+            (frozenset(['item 2']), frozenset(['item 2']), frozenset(['item 1'])),
+            (frozenset(['item 2']), frozenset(['item 2']), frozenset(['item 2'])),
+            (frozenset(['item 1', 'item 2']), frozenset(['item 1'])),
+            (frozenset(['item 1', 'item 2']), frozenset(['item 2'])),
+            (frozenset(['item 1']), frozenset(['item 1', 'item 2'])),
+            (frozenset(['item 2']), frozenset(['item 1', 'item 2'])),
+        ])
+
+    def test_generates_candidate_sequences_from_3_items(self):
+        candidate_sequences = pattern_mining.generate_candidate_sequences(
+            frozenset(['item 1', 'item 2', 'item 3'])
+        )
+
+        self.assertCountEqual(candidate_sequences, [
+            (frozenset(['item 3']), frozenset(['item 3']), frozenset(['item 3'])),
+            (frozenset(['item 3']), frozenset(['item 3']), frozenset(['item 1'])),
+            (frozenset(['item 3']), frozenset(['item 3']), frozenset(['item 2'])),
+            (frozenset(['item 3']), frozenset(['item 1']), frozenset(['item 3'])),
+            (frozenset(['item 3']), frozenset(['item 1']), frozenset(['item 1'])),
+            (frozenset(['item 3']), frozenset(['item 1']), frozenset(['item 2'])),
+            (frozenset(['item 3']), frozenset(['item 2']), frozenset(['item 3'])),
+            (frozenset(['item 3']), frozenset(['item 2']), frozenset(['item 1'])),
+            (frozenset(['item 3']), frozenset(['item 2']), frozenset(['item 2'])),
+            (frozenset(['item 1']), frozenset(['item 3']), frozenset(['item 3'])),
+            (frozenset(['item 1']), frozenset(['item 3']), frozenset(['item 1'])),
+            (frozenset(['item 1']), frozenset(['item 3']), frozenset(['item 2'])),
+            (frozenset(['item 1']), frozenset(['item 1']), frozenset(['item 3'])),
+            (frozenset(['item 1']), frozenset(['item 1']), frozenset(['item 1'])),
+            (frozenset(['item 1']), frozenset(['item 1']), frozenset(['item 2'])),
+            (frozenset(['item 1']), frozenset(['item 2']), frozenset(['item 3'])),
+            (frozenset(['item 1']), frozenset(['item 2']), frozenset(['item 1'])),
+            (frozenset(['item 1']), frozenset(['item 2']), frozenset(['item 2'])),
+            (frozenset(['item 2']), frozenset(['item 3']), frozenset(['item 3'])),
+            (frozenset(['item 2']), frozenset(['item 3']), frozenset(['item 1'])),
+            (frozenset(['item 2']), frozenset(['item 3']), frozenset(['item 2'])),
+            (frozenset(['item 2']), frozenset(['item 1']), frozenset(['item 3'])),
+            (frozenset(['item 2']), frozenset(['item 1']), frozenset(['item 1'])),
+            (frozenset(['item 2']), frozenset(['item 1']), frozenset(['item 2'])),
+            (frozenset(['item 2']), frozenset(['item 2']), frozenset(['item 3'])),
+            (frozenset(['item 2']), frozenset(['item 2']), frozenset(['item 1'])),
+            (frozenset(['item 2']), frozenset(['item 2']), frozenset(['item 2'])),
+        ])
+
     def test_returns_frequent_length_1_sequences_and_supports(self):
         frequent_sequences, supports = \
             pattern_mining.get_frequent_length_k_sequences(
@@ -415,6 +517,21 @@ class PatternMining(unittest.TestCase):
             ((frozenset(['about']), ), 2 / 10),
             ((frozenset(['pizza']), ), 4 / 10),
             ((frozenset(['good']), ), 2 / 10),
+        ])
+
+    def test_returns_frequent_length_2_sequences_and_supports(self):
+        frequent_sequences, supports = \
+            pattern_mining.get_frequent_length_k_sequences(
+                sequence_transactions,
+                k=2
+            )
+
+        assert_expected_sequences_supports(frequent_sequences, supports, [
+            ((frozenset(['the']), frozenset(['service']), 4 / 10)),
+            ((frozenset(['service']), frozenset(['was']), 3 / 10)),
+            ((frozenset(['service']), frozenset(['was']), 3 / 10)),
+            ((frozenset(['the']), frozenset(['pizza']), 2 / 10)),
+            ((frozenset(['the']), frozenset(['pizza']), 2 / 10)),
         ])
 
     def test_returns_frequent_sequences_and_supports(self):
