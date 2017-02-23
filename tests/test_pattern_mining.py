@@ -475,11 +475,11 @@ class PatternMining(unittest.TestCase):
             )
 
         assert_expected_sequences_supports(frequent_sequences, supports, [
-            ((frozenset(['the']), frozenset(['service']), 4 / 10)),
-            ((frozenset(['service']), frozenset(['was']), 3 / 10)),
-            ((frozenset(['service']), frozenset(['was']), 3 / 10)),
-            ((frozenset(['the']), frozenset(['pizza']), 2 / 10)),
-            ((frozenset(['the']), frozenset(['pizza']), 2 / 10)),
+            ((frozenset(['the']), frozenset(['service'])), 4 / 10),
+            ((frozenset(['service']), frozenset(['was'])), 3 / 10),
+            ((frozenset(['service']), frozenset(['was'])), 3 / 10),
+            ((frozenset(['the']), frozenset(['pizza'])), 2 / 10),
+            ((frozenset(['the']), frozenset(['pizza'])), 2 / 10),
         ])
 
     def test_returns_frequent_sequences_and_supports(self):
