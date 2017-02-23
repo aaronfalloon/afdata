@@ -207,14 +207,29 @@ def get_frequent_itemsets(transactions, min_support=0.2):
     return frequent_itemsets, supports
 
 
-def generate_candidate_sequences(items, k):
-    """Generates length-k candidate sequences from the items.
+def sequence_len(sequence):
+    """Returns the length of a sequence.
 
     Parameters
     ----------
-    items : frozenset
-    k : int
-        Length that each candidate sequence should be
+    sequence : tuple of frozenset
+
+    Returns
+    -------
+    int
+    """
+    total_len = 0
+    for element in sequence:
+        total_len += len(element)
+    return total_len
+
+
+def generate_candidate_sequences(length_k_sequences):
+    """Generates length k + 1 candidate sequences from the length k sequences.
+
+    Parameters
+    ----------
+    length_k_sequences : frozenset of tuple of frozenset
 
     Returns
     -------
@@ -222,24 +237,16 @@ def generate_candidate_sequences(items, k):
         Each tuple is a candidate sequence
     """
     candidates = []
-    for product_element in itertools.product(items, repeat=k):
-        candidate = []
-        for item in product_element:
-            candidate.append(frozenset([item]))
-        candidates.append(tuple(candidate))
-    for combination_element in itertools.combinations(items, r=k):
-        element = []
-        for item in combination_element:
-            element.append(item)
-        candidates.append((frozenset(element), ))
-    for candidate in candidates:
-        print(candidate)
+    for sequence in length_k_sequences:
+        sequences_to_join_with = length_k_sequences.difference([sequence])
+        for sequence_to_join_with in sequences_to_join_with:
+            candidates.append(sequence + sequence_to_join_with)
     return candidates
 
 
 def get_frequent_length_k_sequences(transactions, min_support=0.2, k=1, frequent_sub_sequences=None):
     """Returns all the sequences, from the transactions, that satisfy
-    min_support
+    min_support.
 
     Parameters
     ----------

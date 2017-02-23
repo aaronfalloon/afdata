@@ -397,50 +397,64 @@ class PatternMining(unittest.TestCase):
             (frozenset(['bread']), 5 / 7),
         ])
 
-    def test_generates_length_1_candidate_sequences_from_1_item(self):
-        candidate_sequences = pattern_mining.generate_candidate_sequences(frozenset(['item 1']), 1)
+    def test_returns_length_sequence_which_has_no_elements(self):
+        self.assertEqual(pattern_mining.sequence_len(()), 0)
 
-        self.assertCountEqual(candidate_sequences, [
-            (frozenset(['item 1']), )
-        ])
+    def test_returns_length_sequence_which_has_only_1_item_elements(self):
+        self.assertEqual(pattern_mining.sequence_len((
+            frozenset(['item 1']),
+            frozenset(['item 2']),
+            frozenset(['item 3']),
+            frozenset(['item 4'])
+        )), 4)
 
-    def test_generates_length_2_candidate_sequences_from_1_item(self):
-        candidate_sequences = pattern_mining.generate_candidate_sequences(frozenset(['item 1']), 2)
+    def test_returns_length_sequence_which_has_elements_different_lengths(self):
+        self.assertEqual(pattern_mining.sequence_len((
+            frozenset(['item 1']),
+            frozenset(['item 2', 'item 3']),
+            frozenset(['item 4']),
+            frozenset(['item 5', 'item 6', 'item 7'])
+        )), 7)
 
-        self.assertCountEqual(candidate_sequences, [
-            (frozenset(['item 1']), frozenset(['item 1']))
-        ])
-
-    def test_generates_length_3_candidate_sequences_from_1_item(self):
-        candidate_sequences = pattern_mining.generate_candidate_sequences(frozenset(['item 1']), 3)
-
-        self.assertCountEqual(candidate_sequences, [
-            (frozenset(['item 1']), frozenset(['item 1']), frozenset(['item 1']))
-        ])
-
-    def test_generates_length_1_candidate_sequences_from_2_items(self):
+    def test_generates_length_2_candidate_sequences(self):
         candidate_sequences = pattern_mining.generate_candidate_sequences(
-            frozenset(['item 1', 'item 2']),
-            k=1
-        )
-
-        self.assertCountEqual(candidate_sequences, [
-            (frozenset(['item 1']), ),
-            (frozenset(['item 2']), ),
-        ])
-
-    def test_generates_length_2_candidate_sequences_from_2_items(self):
-        candidate_sequences = pattern_mining.generate_candidate_sequences(
-            frozenset(['item 1', 'item 2']),
-            k=2
+            frozenset([
+                (frozenset(['item 1']), ),
+                (frozenset(['item 2']), ),
+                (frozenset(['item 3']), ),
+            ])
         )
 
         self.assertCountEqual(candidate_sequences, [
             (frozenset(['item 1']), frozenset(['item 2'])),
+            (frozenset(['item 2']), frozenset(['item 1'])),
+            (frozenset(['item 2']), frozenset(['item 3'])),
+            (frozenset(['item 3']), frozenset(['item 2'])),
+            (frozenset(['item 1']), frozenset(['item 3'])),
+            (frozenset(['item 3']), frozenset(['item 1'])),
+            (frozenset(['item 1', 'item 2'])),
+            (frozenset(['item 2', 'item 3'])),
+            (frozenset(['item 1', 'item 3'])),
+        ])
+
+    def test_generates_length_2_candidate_sequences_from_4_items(self):
+        candidate_sequences = pattern_mining.generate_candidate_sequences(
+            frozenset(['item 1', 'item 2', 'item 3']),
+        )
+
+        self.assertCountEqual(candidate_sequences, [
+            (frozenset(['item 1']), frozenset(['item 2'])),
+            (frozenset(['item 1']), frozenset(['item 3'])),
             (frozenset(['item 1']), frozenset(['item 1'])),
             (frozenset(['item 2']), frozenset(['item 1'])),
+            (frozenset(['item 2']), frozenset(['item 3'])),
             (frozenset(['item 2']), frozenset(['item 2'])),
+            (frozenset(['item 3']), frozenset(['item 1'])),
+            (frozenset(['item 3']), frozenset(['item 2'])),
+            (frozenset(['item 3']), frozenset(['item 3'])),
             (frozenset(['item 1', 'item 2']), ),
+            (frozenset(['item 1', 'item 3']), ),
+            (frozenset(['item 2', 'item 3']), ),
         ])
 
     def test_generates_length_3_candidate_sequences_from_2_items(self):
@@ -464,7 +478,7 @@ class PatternMining(unittest.TestCase):
             (frozenset(['item 2']), frozenset(['item 1', 'item 2'])),
         ])
 
-    def test_generates_candidate_sequences_from_3_items(self):
+    def test_generates_candidate_sequences_from_length_2_sequences(self):
         candidate_sequences = pattern_mining.generate_candidate_sequences(
             frozenset(['item 1', 'item 2', 'item 3'])
         )
