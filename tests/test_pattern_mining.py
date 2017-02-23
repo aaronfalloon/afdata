@@ -425,17 +425,27 @@ class PatternMining(unittest.TestCase):
             ])
         )
 
-        self.assertCountEqual(candidate_sequences, [
+        self.assertCountEqual(candidate_sequences, frozenset([
             (frozenset(['item 1']), frozenset(['item 2'])),
             (frozenset(['item 2']), frozenset(['item 1'])),
             (frozenset(['item 2']), frozenset(['item 3'])),
             (frozenset(['item 3']), frozenset(['item 2'])),
             (frozenset(['item 1']), frozenset(['item 3'])),
             (frozenset(['item 3']), frozenset(['item 1'])),
-            (frozenset(['item 1', 'item 2'])),
-            (frozenset(['item 2', 'item 3'])),
-            (frozenset(['item 1', 'item 3'])),
-        ])
+            (frozenset(['item 1', 'item 2']), ),
+            (frozenset(['item 2', 'item 3']), ),
+            (frozenset(['item 1', 'item 3']), ),
+        ]))
+
+    def test_raises_exception_when_sequences_different_lengths(self):
+        with self.assertRaisesRegex(ValueError, 'k_length_sequences must all be the same length'):
+            pattern_mining.generate_candidate_sequences(
+                frozenset([
+                    (frozenset(['item 1']), ),
+                    (frozenset(['item 2', 'item 3']), ),
+                    (frozenset(['item 4']), ),
+                ])
+            )
 
     def test_generates_length_2_candidate_sequences_from_4_items(self):
         candidate_sequences = pattern_mining.generate_candidate_sequences(

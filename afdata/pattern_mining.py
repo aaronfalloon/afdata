@@ -233,15 +233,26 @@ def generate_candidate_sequences(length_k_sequences):
 
     Returns
     -------
-    list of tuple of frozenset
+    frozenset of tuple of frozenset
         Each tuple is a candidate sequence
     """
-    candidates = []
+    example_len = sequence_len(next(iter(length_k_sequences)))
+    for length_k_sequence in length_k_sequences:
+        if sequence_len(length_k_sequence) != example_len:
+            raise ValueError('k_length_sequences must all be the same length')
+    candidates = set()
     for sequence in length_k_sequences:
         sequences_to_join_with = length_k_sequences.difference([sequence])
         for sequence_to_join_with in sequences_to_join_with:
-            candidates.append(sequence + sequence_to_join_with)
-    return candidates
+            candidates.add(sequence + sequence_to_join_with)
+    if example_len == 1:
+        for sequence in length_k_sequences:
+            sequences_to_join_with = length_k_sequences.difference([sequence])
+            for sequence_to_join_with in sequences_to_join_with:
+                for element in sequence:
+                    for element_from_sequence_to_join_with in sequence_to_join_with:
+                        candidates.add((frozenset(set(element).union(element_from_sequence_to_join_with)), ))
+    return frozenset(candidates)
 
 
 def get_frequent_length_k_sequences(transactions, min_support=0.2, k=1, frequent_sub_sequences=None):
