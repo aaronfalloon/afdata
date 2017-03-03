@@ -91,15 +91,12 @@ def sequence_support(transactions, sequences):
     counts = {}
     total_transactions = len(transactions)
     for sequence in sequences:
-        counts[sequence] = 0
+        counts[tuple(sequence)] = 0
     for i, transaction in enumerate(transactions):
         for sequence in sequences:
             if is_subsequence(transaction, sequence):
-                counts[sequence] += 1
-    supports = {}
-    for sequence, count in counts.items():
-        supports[sequence] = count
-    return supports
+                counts[tuple(sequence)] += 1
+    return counts
 
 
 def confidence(transactions, itemset_a, itemset_b):
@@ -380,28 +377,30 @@ def get_projected_transactions(transactions, prefix):
                     break;
     return projected_transactions
 
-def get_frequent_sequences_2(transactions, min_support=100, prefix=tuple()):
+def get_frequent_sequences_2(transactions, min_support=100, prefix=[]):
+    print('prefix', prefix)
+    transactions_with_prefix = []
     items = []
     for transaction in transactions:
+        transactions_with_prefix.append(prefix + transaction)
         for itemset in transaction:
             for item in itemset:
                 items.append(item)
     items = frozenset(items)
-    sequences = []
+    sequences_with_prefix = []
     for item in items:
-        sequences.append((frozenset([item]), ))
-    supports = sequence_support(transactions, sequences)
+        sequences_with_prefix.append(prefix + [frozenset([item])])
+    supports = sequence_support(transactions_with_prefix, sequences_with_prefix)
     frequent_sequences = []
     frequent_supports = []
     for sequence, support in supports.items():
         if support >= min_support:
-            frequent_sequences.append(list(prefix) + list(sequence))
+            frequent_sequences.append(list(sequence))
             frequent_supports.append(support)
-    projected_databases = {}
     for frequent_sequence in frequent_sequences:
-        projected_database = get_projected_transactions(transactions, frequent_sequence)
+        projected_database = get_projected_transactions(transactions_with_prefix, frequent_sequence)
         frequent_sequences_from_projected, frequent_supports_from_projected = \
-            get_frequent_sequences_2(projected_database, min_support, prefix=frequent_sequence)
+            get_frequent_sequences_2(projected_database, min_support=min_support, prefix=frequent_sequence)
         frequent_sequences += frequent_sequences_from_projected
         frequent_supports += frequent_supports_from_projected
     return frequent_sequences, frequent_supports

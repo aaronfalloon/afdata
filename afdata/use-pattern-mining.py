@@ -1,13 +1,13 @@
 import pattern_mining
 
-with open('tests/reviews-sample-1.txt', 'r') as reviews:
+with open('tests/reviews-sample.txt', 'r') as reviews:
     transactions = []
 
     for review in reviews:
         transaction = []
         for word in review.split():
             transaction.append(frozenset([word]))
-        transactions.append(tuple(transaction))
+        transactions.append(transaction)
 
     frequent_sequences, supports = \
         pattern_mining.get_frequent_sequences_2(
