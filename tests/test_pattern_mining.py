@@ -145,6 +145,13 @@ class PatternMining(unittest.TestCase):
             frozenset(['pizza']),
         )))
 
+    def test_returns_true_when_candidate_one_itemset_one_item_is_subsequence(self):
+        sequence = [frozenset(itemset) for itemset in sequence_transactions[7]]
+
+        self.assertTrue(pattern_mining.is_subsequence(sequence, (
+            frozenset(['the']),
+        )))
+
     def test_returns_false_when_candidate_is_not_subsequence(self):
         sequence = [frozenset(itemset) for itemset in sequence_transactions[0]]
 
@@ -466,6 +473,20 @@ class PatternMining(unittest.TestCase):
             ((frozenset(['pizza']), ), 4 / 10),
             ((frozenset(['good']), ), 2 / 10),
         ])
+
+    def test_hack(self):
+        with open('tests/reviews-sample-1.txt', 'r') as reviews:
+            transactions = []
+            for review in reviews:
+                transactions.append([[word] for word in review.split()])
+
+        frequent_sequences, supports = \
+            pattern_mining.get_frequent_sequences(
+                transactions,
+                min_support=0.2
+            )
+
+        self.assertTrue(False)
 
     def test_returns_frequent_length_2_sequences_and_supports(self):
         frequent_sequences, supports = \

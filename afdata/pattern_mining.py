@@ -1,5 +1,6 @@
 import itertools
 import operator
+import time
 
 
 def support(transactions, itemsets):
@@ -41,20 +42,34 @@ def is_subsequence(sequence, candidate):
     -------
     bool
     """
-    for i, itemset in enumerate(sequence):
-        if candidate[0].issubset(itemset):
-            candidate_tail = candidate[1:]
-            # Subtract 1 because the ith element has already been matched
-            sequence_tail_length = len(sequence) - i - 1
-            if not len(candidate_tail) > sequence_tail_length:
-                is_subsequence = True
-                # Check for the rest of the candidate sequence
-                for j, candidate_itemset in enumerate(candidate_tail):
-                    if not candidate_itemset.issubset(sequence[i + (j + 1)]):
-                        is_subsequence = False
-                        break
-                if is_subsequence:
-                    return True
+    if sequence_len(candidate) == 1:
+        item = set(candidate[0]).pop()
+        for itemset in sequence:
+            if item in itemset:
+                return True
+    elif sequence_len(candidate) == 2:
+        item_1 = set(candidate[0]).pop()
+        item_2 = set(candidate[1]).pop()
+        for i, itemset in enumerate(sequence):
+            if item_1 in itemset:
+                if i + 1 < len(sequence):
+                    if item_2 in sequence[i + 1]:
+                        return True
+    else:
+        for i, itemset in enumerate(sequence):
+            if candidate[0].issubset(itemset):
+                candidate_tail = candidate[1:]
+                # Subtract 1 because the ith element has already been matched
+                sequence_tail_length = len(sequence) - i - 1
+                if not len(candidate_tail) > sequence_tail_length:
+                    is_subsequence = True
+                    # Check for the rest of the candidate sequence
+                    for j, candidate_itemset in enumerate(candidate_tail):
+                        if not candidate_itemset.issubset(sequence[i + (j + 1)]):
+                            is_subsequence = False
+                            break
+                    if is_subsequence:
+                        return True
     return False
 
 
@@ -74,16 +89,16 @@ def sequence_support(transactions, sequences):
         is the sequence's support
     """
     counts = {}
+    total_transactions = len(transactions)
     for sequence in sequences:
         counts[sequence] = 0
-    for transaction in transactions:
+    for i, transaction in enumerate(transactions):
         for sequence in sequences:
             if is_subsequence(transaction, sequence):
                 counts[sequence] += 1
-    total_transactions = len(transactions)
     supports = {}
     for sequence, count in counts.items():
-        supports[sequence] = count / total_transactions
+        supports[sequence] = count
     return supports
 
 
@@ -245,13 +260,13 @@ def generate_candidate_sequences(length_k_sequences):
         sequences_to_join_with = length_k_sequences.difference([sequence])
         for sequence_to_join_with in sequences_to_join_with:
             candidates.add(sequence + sequence_to_join_with)
-    if example_len == 1:
-        for sequence in length_k_sequences:
-            sequences_to_join_with = length_k_sequences.difference([sequence])
-            for sequence_to_join_with in sequences_to_join_with:
-                for element in sequence:
-                    for element_from_sequence_to_join_with in sequence_to_join_with:
-                        candidates.add((frozenset(set(element).union(element_from_sequence_to_join_with)), ))
+    #if example_len == 1:
+    #    for sequence in length_k_sequences:
+    #        sequences_to_join_with = length_k_sequences.difference([sequence])
+    #        for sequence_to_join_with in sequences_to_join_with:
+    #            for element in sequence:
+    #                for element_from_sequence_to_join_with in sequence_to_join_with:
+    #                    candidates.add((frozenset(set(element).union(element_from_sequence_to_join_with)), ))
     return frozenset(candidates)
 
 
@@ -294,38 +309,99 @@ def get_frequent_length_k_sequences(transactions, min_support=0.2, k=1, frequent
     return frequent_length_k_sequences, frequent_supports
 
 
-def get_frequent_sequences(transactions, prefix=None):
-    """Returns all the sequences, from the transactions, that satisfy
-    min_support.
-
-    Uses the GSP algorithm.
-
-    Parameters
-    ----------
-    transactions : list of list of list
-        Each transaction represents a sequence and a sequence is an ordered list
-        of itemsets
-    min_support : float, optional
-        From 0.0 to 1.0. Percentage of transactions that should contain a
-        sequence for it to be considered frequent.
-
-    Returns
-    -------
-    list of tuple of frozenset
-        Frequent sequences
-    list of float
-        Supports of the frequent sequences
-    """
-    items = set()
+def get_frequent_sequences(transactions, min_support=0.2):
+    # Get frequent length-1 sequences
+    items = []
     for transaction in transactions:
         for itemset in transaction:
-            items = items.union(itemset)
+            for item in itemset:
+                items.append(item[0])
+    items = frozenset(items)
+    print('total items', len(items))
     sequences = []
     for item in items:
         sequences.append((frozenset([item]), ))
     supports = sequence_support(transactions, sequences)
-    sorted_supports = sorted(supports.items(), key=operator.itemgetter(1), reverse=True)
-    frequent_length_1_sequences = [sequence for sequence, support in sorted_supports if support >= 0.2]
-    for frequent_length_1_sequence in frequent_length_1_sequences:
-        print(frequent_length_1_sequence)
-    return [], []
+    frequent_length_1_sequences = []
+    frequent_length_1_supports = []
+    for sequence, support in supports.items():
+        if support >= min_support:
+            frequent_length_1_sequences.append(sequence)
+            frequent_length_1_supports.append(support)
+    # Get frequent length-2 sequences
+    print(len(frequent_length_1_sequences))
+    candidates = generate_candidate_sequences(frozenset(frequent_length_1_sequences))
+    print(len(candidates))
+    supports = sequence_support(transactions, candidates)
+    frequent_length_2_sequences = []
+    frequent_length_2_supports = []
+    for sequence, support in supports.items():
+        if support >= min_support:
+            frequent_length_2_sequences.append(sequence)
+            frequent_length_2_supports.append(support)
+    # Combine length-1 and length-2 sequences
+    frequent_sequences = frequent_length_1_sequences + frequent_length_2_sequences
+    frequent_supports = frequent_length_1_supports + frequent_length_2_supports
+    return frequent_sequences, frequent_supports
+
+def is_prefix(alpha, beta):
+    n = sequence_len(alpha) - 1
+    m = sequence_len(beta) - 1
+
+    if m > n:
+        return False, None
+
+    for i in range(m):
+        if beta[i] != alpha[i]:
+            return False, None
+
+    if not beta[m].issubset(alpha[m]):
+        return False, None
+
+    return True, m
+
+def get_suffix(alpha, beta):
+    result, m = is_prefix(alpha, beta)
+    if not result:
+        return None
+    alpha = list(alpha)
+    gamma = alpha[(m + 1):]
+    return gamma
+
+def get_projected_transactions(transactions, prefix):
+    projected_transactions = []
+    for transaction in transactions:
+        for i in range(0, len(transaction)):
+            result, m = is_prefix(transaction[i:], prefix)
+            if result:
+                suffix = get_suffix(transaction[i:], prefix)
+                if sequence_len(suffix) > 0:
+                    projected_transactions.append(suffix)
+                    break;
+    return projected_transactions
+
+def get_frequent_sequences_2(transactions, min_support=100, prefix=tuple()):
+    items = []
+    for transaction in transactions:
+        for itemset in transaction:
+            for item in itemset:
+                items.append(item)
+    items = frozenset(items)
+    sequences = []
+    for item in items:
+        sequences.append((frozenset([item]), ))
+    supports = sequence_support(transactions, sequences)
+    frequent_sequences = []
+    frequent_supports = []
+    for sequence, support in supports.items():
+        if support >= min_support:
+            frequent_sequences.append(list(prefix) + list(sequence))
+            frequent_supports.append(support)
+    projected_databases = {}
+    for frequent_sequence in frequent_sequences:
+        projected_database = get_projected_transactions(transactions, frequent_sequence)
+        frequent_sequences_from_projected, frequent_supports_from_projected = \
+            get_frequent_sequences_2(projected_database, min_support, prefix=frequent_sequence)
+        frequent_sequences += frequent_sequences_from_projected
+        frequent_supports += frequent_supports_from_projected
+    return frequent_sequences, frequent_supports
